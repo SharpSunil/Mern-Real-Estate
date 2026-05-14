@@ -1,0 +1,40 @@
+# Node modules
+node_modules/
+
+# Environment variables
+# .env
+
+# Logs
+*.log
+logs/
+
+# Build files
+dist/
+build/
+
+# Nodemon
+.nodemon/
+
+# Temporary files
+tmp/
+temp/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# IntelliJ
+.idea/
+
+# Coverage
+coverage/
+
+# Cache
+.cache/
+
+# Package lock optional
+# package-lock.json
+# yarn.lock
