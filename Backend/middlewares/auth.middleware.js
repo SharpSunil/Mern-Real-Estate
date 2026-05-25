@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import user from "../models/usermodel.js";
+import User from "../models/usermodel.js";
 
 // Middleware to protect routes
 export const protect = async (req, res, next) => {
@@ -7,7 +7,7 @@ export const protect = async (req, res, next) => {
         let token;
         if (
             req.headers.authorization &&
-            req.headers.authorization.startWith(
+            req.headers.authorization.startsWith(
                 "Bearer"
             )
         ) {
@@ -17,7 +17,7 @@ export const protect = async (req, res, next) => {
             return res.status(401).json({ success: false, message: "Not authorized, no token" });
         }
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = await User.findById(decoded.id).select("-password");
+        req.user = await User.findById(decoded.userId).select("-password");
 
 
         if (req.user && req.user.isBlocked) {
