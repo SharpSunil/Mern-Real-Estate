@@ -7,67 +7,67 @@ import crypto from "crypto";
 //Register user 
 
 export const register = async (req, res) => {
-  try {
-    const { name, email, password, role } = req.body;
+    try {
+        const { name, email, password, role } = req.body;
 
-    // Check if user already exists
-    const userExists = await User.findOne({ email });
+        // Check if user already exists
+        const userExists = await User.findOne({ email });
 
-    if (userExists) {
-      return res.status(400).json({
-        success: false,
-        message: "User already exists",
-      });
-    }
+        if (userExists) {
+            return res.status(400).json({
+                success: false,
+                message: "User already exists",
+            });
+        }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Generate verification token
-    const verificationToken = Math.floor(
-      100000 + Math.random() * 900000
-    ).toString();
+        // Generate verification token
+        const verificationToken = Math.floor(
+            100000 + Math.random() * 900000
+        ).toString();
 
-    // Create user
-    const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      role,
-      isApproved: role === "seller" ? false : true,
-      verificationToken,
-    });
+        // Create user
+        const user = await User.create({
+            name,
+            email,
+            password: hashedPassword,
+            role,
+            isApproved: role === "seller" ? false : true,
+            verificationToken,
+        });
 
-    // Send email
-    await sendEmail({
-      email,
-      subject: "Welcome to Real Estate Platform - Verify Your Email",
-      message: `
+        // Send email
+        await sendEmail({
+            email,
+            subject: "Welcome to Real Estate Platform - Verify Your Email",
+            message: `
         <h1>Welcome to Real Estate Platform, ${name}!</h1>
         <p>Your verification code:</p>
         <h2>${verificationToken}</h2>
       `,
-    });
+        });
 
-    res.status(201).json({
-      success: true,
-      message: "User registered successfully. Please verify your email.",
-      user: {
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
+        res.status(201).json({
+            success: true,
+            message: "User registered successfully. Please verify your email.",
+            user: {
+                name: user.name,
+                email: user.email,
+                role: user.role,
+            },
+        });
 
-  } catch (error) {
-    console.error(error);
+    } catch (error) {
+        console.error(error);
 
-    res.status(500).json({
-      success: false,
-      message: "Registration Was Not Successful",
-      error: error.message,
-    });
-  }
+        res.status(500).json({
+            success: false,
+            message: "Registration Was Not Successful",
+            error: error.message,
+        });
+    }
 };
 
 export const login = async (req, res) => {
