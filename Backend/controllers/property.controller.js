@@ -307,7 +307,32 @@ export const getAllProperties = async (req, res) => {
 //to get a properties details
 export const getPropertyDetails = async (req, res) => {
 try{
-    const property = await 
+    const property = await Property.findById(req.params.id).populate("seller", "name email phone profilePic");
+    if (!property) {
+        return res.status(404).json({
+            success: false,
+            message: "Property not found",
+        })
+    }    
+    //unique view tracking by id
+    let visitorId = req.ip;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+        try{
+            const token = authHeader.split(" ")[1];
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            visitorId = decoded.id;
+        }
+        catch(error){
+            console.error("Error verifying JWT token: ", error);
+        }
+    }
+    const isSellerChecking = visitorId === property.seller._id.toString();
+    if(!isSellerChecking && !property.viewedBy.includes(visitorId)){
+        property.views += 1;
+        property.viewedBy.push(visitorId);
+        await property.save();
+    }
 
 }catch(error){
     console.error("Error fetching property details: ", error);
