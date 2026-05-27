@@ -11,6 +11,7 @@ export const getProfile = async (req, res) => {
         console.error("Get Profile Error:", error.message);
         res.status(500).json({ success: false, message: error.message });
     }
+    
 }
 
 
