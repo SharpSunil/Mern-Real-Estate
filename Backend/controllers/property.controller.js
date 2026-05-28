@@ -306,41 +306,120 @@ export const getAllProperties = async (req, res) => {
 
 //to get a properties details
 export const getPropertyDetails = async (req, res) => {
-try{
-    const property = await Property.findById(req.params.id).populate("seller", "name email phone profilePic");
-    if (!property) {
-        return res.status(404).json({
-            success: false,
-            message: "Property not found",
+    try {
+        const property = await Property.findById(req.params.id).populate("seller", "name email phone profilePic");
+        if (!property) {
+            return res.status(404).json({
+                success: false,
+                message: "Property not found",
+            })
+        }
+        //unique view tracking by id
+        let visitorId = req.ip;
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+            try {
+                const token = authHeader.split(" ")[1];
+                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                visitorId = decoded.id;
+            }
+            catch (error) {
+                console.error("Error verifying JWT token: ", error);
+            }
+        }
+        const isSellerChecking = visitorId === property.seller._id.toString();
+
+        //only increment the view if not seller but if he edit then increase the view 
+        if (!isSellerChecking && !property.viewedBy.includes(visitorId)) {
+            property.views += 1;
+            property.viewedBy.push(visitorId);
+            await property.save();
+        }
+        const similarProperties = await Property.find({
+            _id: { $ne: property._id },
+            city: property.city,
+            propertyType: property.propertyType,
+            status: property.status,
         })
-    }    
-    //unique view tracking by id
-    let visitorId = req.ip;
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-        try{
-            const token = authHeader.split(" ")[1];
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            visitorId = decoded.id;
-        }
-        catch(error){
-            console.error("Error verifying JWT token: ", error);
-        }
-    }
-    const isSellerChecking = visitorId === property.seller._id.toString();
-    if(!isSellerChecking && !property.viewedBy.includes(visitorId)){
-        property.views += 1;
-        property.viewedBy.push(visitorId);
-        await property.save();
-    }
+            .limit(4)
+            .select("title price images city area propertyType bhk areaSize status");
+        res.json({
+            success: true,
+            property,
+            similarProperties,
+        })
 
-}catch(error){
-    console.error("Error fetching property details: ", error);
-    res.status(500).json({
-        success: false,
-        message: "Internal server error while fetching property details",
-        error: error.message,
-    })
+    } catch (error) {
+        console.error("Error fetching property details: ", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error while fetching property details",
+            error: error.message,
+        })
 
+    }
 }
+
+
+
+//seller dashbaord to get all the inquiries for his properties
+export const setSellerDashboard = async (req, res) => {
+    try {
+
+        const sellerId = req.user._id;
+        const totalProperties = await Property.countDocuments({ seller: sellerId });
+        const activeProperties = await Property.countDocuments({ seller: sellerId, status: "sale" });
+        const soldProperties = await Property.countDocuments({ seller: sellerId, status: "sold" });
+        const totalInquiries = await Inquiry.countDocuments({ seller: sellerId });
+        //calculate the views for all properties
+        const viewsData = await Property.aggregate([
+            { $match: { seller: sellerId } },
+            { $group: { _id: null, totalViews: { $sum: "$views" } } },
+        ]);
+        const totalViews = viewsData.length > 0 ? viewsData[0].totalViews : 0;
+        res.json({
+            success: true,
+            stats: {
+                totalProperties,
+                activeProperties,
+                soldProperties,
+                totalInquiries,
+                totalViews,
+            }
+        })
+    } catch (error) {
+        console.error("Error fetching seller dashboard: ", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error while fetching seller dashboard",
+            error: error.message,
+        })
+    }
+}
+
+
+
+//get property counts by type
+export const getPropertyCounts = async (req, res) => {
+    try {
+        const counts = await Property.aggregate([
+            { $match: { status: "sale" } },
+            { $group: { _id: "$propertyType", count: { $sum: 1 } } }
+        ]);
+        const formattedCounts = counts.reduce((acc, curr) => {
+            acc[curr._id] = curr.count;
+            return acc;
+        }, {});
+        res.json({
+            success: true,
+            counts: formattedCounts
+        })
+    } catch (error) {
+        console.error("Error fetching property counts: ", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error while fetching property counts",
+            error: error.message,
+        })
+    }
 }
