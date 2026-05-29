@@ -6,6 +6,7 @@ import { connectDB } from "./config/db.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
 import propertyRouter from "./routes/property.route.js";
+import inquiryRouter from "./routes/inquiry.routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -20,8 +21,8 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
-
 app.use("/api/property", propertyRouter);
+app.use("/api/inquiry", inquiryRouter);
 
 app.get("/", (req, res) => {
   res.send("API is running...");
