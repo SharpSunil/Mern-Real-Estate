@@ -235,7 +235,7 @@ export const getAllProperties = async (req, res) => {
     try {
         const { city, area, pincode, propertyType, bhk, furnishing, status, minPrice, maxPrice, amenities, sort, seller } = req.query;
         let query = {
-            status: "sale",
+            status: "available",
         }
 
         if (seller) {
@@ -363,12 +363,12 @@ export const getPropertyDetails = async (req, res) => {
 
 
 //seller dashbaord to get all the inquiries for his properties
-export const setSellerDashboard = async (req, res) => {
+export const getSellerDashboard = async (req, res) => {
     try {
 
         const sellerId = req.user._id;
         const totalProperties = await Property.countDocuments({ seller: sellerId });
-        const activeProperties = await Property.countDocuments({ seller: sellerId, status: "sale" });
+        const activeProperties = await Property.countDocuments({ seller: sellerId, status: "available" });
         const soldProperties = await Property.countDocuments({ seller: sellerId, status: "sold" });
         const totalInquiries = await Inquiry.countDocuments({ seller: sellerId });
         //calculate the views for all properties
@@ -403,7 +403,7 @@ export const setSellerDashboard = async (req, res) => {
 export const getPropertyCounts = async (req, res) => {
     try {
         const counts = await Property.aggregate([
-            { $match: { status: "sale" } },
+            { $match: { status: "available" } },
             { $group: { _id: "$propertyType", count: { $sum: 1 } } }
         ]);
         const formattedCounts = counts.reduce((acc, curr) => {

@@ -1,6 +1,6 @@
-import mangoose from "mongoose";
+import mongoose from "mongoose";
 
-const propertySchema = new mangoose.Schema({
+const propertySchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
@@ -53,7 +53,7 @@ const propertySchema = new mangoose.Schema({
     },
     images: [{ type: String }],
     seller: {
-        type: mangoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
     },//seller id get from user model
