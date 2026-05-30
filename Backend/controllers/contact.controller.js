@@ -1,8 +1,6 @@
 import Contact from "../models/contact.model.js";
 import sendEmail from "../utils/sendEmail.js";
 
-import sentEmail from "../utils/sendEmail.js"
-
 
 //to create a contact 
 export const createContact = async (req, res) => {
@@ -61,15 +59,19 @@ export const createContact = async (req, res) => {
 
 export const getAllContacts = async (req, res) => {
     try {
-        const contacts = (await Contact.find()).toSorted({ createdAt: -1 });
+        const contacts = await Contact.find().sort({ createdAt: -1 });
+
         res.status(200).json({
             success: true,
             contacts
-        })
+        });
+
     } catch (error) {
+        console.error("Get Contacts Error:", error);
+
         res.status(500).json({
             success: false,
-            message:"Failed to fetch contacts"
-        })
+            message: error.message
+        });
     }
-}
+};
