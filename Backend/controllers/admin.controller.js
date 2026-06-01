@@ -121,8 +121,8 @@ export const getDashboardStats = async (req, res) => {
             status: "sold"
         })
         res.json({
-            success:true,
-            stats:{
+            success: true,
+            stats: {
                 totalUsers,
                 totalProperties,
                 activeListings,
@@ -131,6 +131,55 @@ export const getDashboardStats = async (req, res) => {
             }
         })
     } catch (error) {
+        res.status(500).json({
+            message: error.message
+        })
 
+    }
+}
+
+//Get the pending seller Account
+export const getPendingSellers = async (req, res) => {
+    try {
+        const pendingSellers = await User.find({
+            role: "seller",
+            isVerified: false
+        }).select("-password");
+        res.json({
+            success: true,
+            count: pendingSellers.length,
+            pendingSellers
+        })
+    }
+    catch (error) {
+        res.status(500).json({
+            message: error.message
+        })
+    }
+}
+
+//Now To approve a perticullar seller
+export const approveSeller = async (req, res) => {
+    try {
+        const seller = await User.findById(req.params.id);
+        if (!seller || seller.role !== "seller") {
+            return res.status(404).json({
+                success: false,
+                message: "Seller not found"
+            })
+        }
+        seller.isVerified = true;
+        await seller.save();
+        res.json({
+            success: true,
+            message: "Seller approved successfully",
+            seller
+        })
+
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        })
     }
 }
