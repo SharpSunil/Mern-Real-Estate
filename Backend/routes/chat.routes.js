@@ -91,10 +91,34 @@ chatRouter.post("/send", async (req, res) => {
 })
 
 // To get Chat for User
-chatRouter.get("/", async (req, res) =>{
+chatRouter.get("/user", async (req, res) =>{
     try{
-
+const userId = req.user._id;
+const chats = await Chat.find({
+    $or: [{ buyer: userId }, { seller: userId }]
+}).populate("buyer", "name email profilePic").populate("seller", "name email profilePic").populate("property", "title price images")
+.sort ({ updatedAt: -1 }); // Sort by most recent chats first   
+    res.json(chats);
     }catch(error){
-        
+        res.status(500).json({
+            success: false,
+            message: "Error fetching chats",
+            error: error.message
+        })
+    }
+})
+
+//to get chat messaages
+chatRouter.get("/:chatId", async(req, res) =>{
+    try{
+        const chat = await Chat.findById(req.params.chatId).populate("message.sender",
+            "name profilePic"
+        )
+    }catch(error){
+        res.status(500).json({
+            success: false,
+            message: "Error fetching chat messages",
+            error: error.message
+        })
     }
 })
