@@ -115,7 +115,7 @@ export const getDashboardStats = async (req, res) => {
         const totalProperties = await Property.countDocuments();
 
         const activeListings = await Property.countDocuments({
-            status: "sale"
+            status: "available"
         })
         const soldProperties = await Property.countDocuments({
             status: "sold"

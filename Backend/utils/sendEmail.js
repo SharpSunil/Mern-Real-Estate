@@ -66,8 +66,7 @@ const sendEmail = async (options) => {
 
   } catch (error) {
 
-    console.error(
-      "Email Sending Error:",
+    console.error( "Email Sending Error:",
       error.message
     );
 
