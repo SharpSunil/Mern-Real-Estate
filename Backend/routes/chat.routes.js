@@ -96,22 +96,32 @@ chatRouter.get("/user", async (req, res) => {
         const userId = req.user._id;
         const chats = await Chat.find({
             $or: [{ buyer: userId }, { seller: userId }]
+<<<<<<< HEAD
         })
 
             .populate("buyer", "name email profilePic")
             .populate("seller", "name email profilePic")
             .populate("property", "title price images")
             .sort({ updatedAt: -1 }); //sort by most recent activity
+=======
+        }).populate("buyer", "name email profilePic").populate("seller", "name email profilePic").populate("property", "title price images")
+            .sort({ updatedAt: -1 }); // Sort by most recent chats first   
+>>>>>>> 15351acd37b1a59ebb36d122518ce4e462ae3f7b
         res.json(chats);
     } catch (error) {
         res.status(500).json({
             success: false,
+<<<<<<< HEAD
             message: "Error fetching user chats",
+=======
+            message: "Error fetching chats",
+>>>>>>> 15351acd37b1a59ebb36d122518ce4e462ae3f7b
             error: error.message
         })
     }
 })
 
+<<<<<<< HEAD
 //to get chat messages
 
 chatRouter.get("/:chatId", async (req, res) => {
@@ -133,10 +143,23 @@ chatRouter.get("/:chatId", async (req, res) => {
         res.status(500).json({
 
             message: "Error fetching chat details",
+=======
+//to get chat messaages
+chatRouter.get("/:chatId", async (req, res) => {
+    try {
+        const chat = await Chat.findById(req.params.chatId).populate("message.sender",
+            "name profilePic"
+        )
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error fetching chat messages",
+>>>>>>> 15351acd37b1a59ebb36d122518ce4e462ae3f7b
             error: error.message
         })
     }
 })
+<<<<<<< HEAD
 
 //to delete a entire chat (for admin or for user to delete their chat history)
 chatRouter.delete("/:chatId", async (req, res) => {
@@ -162,3 +185,5 @@ chatRouter.delete("/:chatId", async (req, res) => {
 })
 
 export default chatRouter;
+=======
+>>>>>>> 15351acd37b1a59ebb36d122518ce4e462ae3f7b
