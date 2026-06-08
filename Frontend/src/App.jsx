@@ -1,13 +1,15 @@
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import {  Routes, Route } from 'react-router-dom'
 import "./App.scss"
+import Home from './Pages/Home/Home'
 
 const App = () => {
   return (
-    <div>
-      <h1>Welcome to the Real Estate App</h1>
-     
-    </div>
+    
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+   
   )
 }
 

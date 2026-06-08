@@ -91,10 +91,74 @@ chatRouter.post("/send", async (req, res) => {
 })
 
 // To get Chat for User
-chatRouter.get("/", async (req, res) =>{
-    try{
+chatRouter.get("/user", async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const chats = await Chat.find({
+            $or: [{ buyer: userId }, { seller: userId }]
+        })
 
-    }catch(error){
-        
+            .populate("buyer", "name email profilePic")
+            .populate("seller", "name email profilePic")
+            .populate("property", "title price images")
+            .sort({ updatedAt: -1 }); //sort by most recent activity
+        res.json(chats);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error fetching user chats",
+            error: error.message
+        })
     }
 })
+
+//to get chat messages
+
+chatRouter.get("/:chatId", async (req, res) => {
+    try {
+        const chat = await Chat.findById(req.params.chatId)
+            .populate("message.sender", "name profilePic");
+
+
+        if (!chat)
+            return res.status(404).json({ message: "Chat not found" });
+        //ensure the requester is part of the chat  
+        const userId = req.user._id.toString();
+        if (chat.buyer.toString() !== userId && chat.seller.toString() !== userId) {
+            return res.status(403).json({ message: "Not authorized " });
+        }
+
+        res.json(chat);
+    } catch (error) {
+        res.status(500).json({
+
+            message: "Error fetching chat details",
+            error: error.message
+        })
+    }
+})
+
+//to delete a entire chat (for admin or for user to delete their chat history)
+chatRouter.delete("/:chatId", async (req, res) => {
+    try {
+        const chat = await Chat.findById(req.params.chatId);
+        if (!chat)
+            return res.status(404).json({ message: "Chat not found" });
+        //now we ensure the user is part of the chat 
+        if(chat.buyer.toString() !== req.user._id.toString() && chat.seller.toString() !== req.user._id.toString()){
+            return res.status(403).json({ message: "Not authorized to delete this chat" });
+
+        }
+        await Chat.findByIdAndDelete(req.params.chatId);
+        res.json({ message: "Chat deleted successfully" });
+    
+    }
+    catch (error) {
+        res.status(500).json({
+            message: "Error deleting chat",
+            error: error.message
+        })
+    }
+})
+
+export default chatRouter;
