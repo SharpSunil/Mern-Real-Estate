@@ -1,0 +1,130 @@
+.navbar-parent {
+  background: var(--white);
+  box-shadow: var(--shadow);
+  position: relative;
+
+  .navbar-cont-desktop {
+    display: flex;
+    height: 70px;
+    justify-content: space-between;
+    align-items: center;
+    // Logo and Icons Stylesheet
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      svg {
+        font-size: 35px;
+        color: var(--white);
+        background: var(--accent);
+        padding: 5px;
+        border-radius: 5px;
+      }
+      span {
+        font-size: 22px;
+        font-weight: 800;
+        color: #0d6e59;
+      }
+    }
+    //Menu StyleSheet
+    .nav-links {
+      background: rgba(236, 161, 161, 0.051);
+      padding: 10px 24px;
+      border-radius: 50px;
+      box-shadow: var(--shadow);
+      ul {
+        display: flex;
+        gap: 25px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        li a {
+          color: var(--primary);
+          transition: var(--trans);
+          &:hover {
+            color: var(--accent);
+          }
+        }
+      }
+    }
+    @media only screen and (max-width: 570px) {
+      .nav-links {
+        display: none;
+      }
+    }
+    .menu-icon {
+      display: none;
+      svg {
+        color: var(--primary);
+        font-size: 32px;
+        font-weight: 700;
+      }
+      @media only screen and (max-width: 570px) {
+        display: block;
+      }
+    }
+  }
+
+  //mobile menu
+  .navbar-cont-mobile {
+    display: block;
+    flex-direction: column;
+    height: 100vh;
+    background: var(--white);
+    box-shadow: var(--shadow);
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 20px;
+    width: 70%;
+    .mobile-logo {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+
+      svg {
+        font-size: 35px;
+        color: var(--white);
+        background: var(--accent);
+        padding: 5px;
+        border-radius: 5px;
+      }
+      span {
+        font-size: 22px;
+        font-weight: 800;
+        color: #0d6e59;
+      }
+    }
+
+    .menu-list-mb {
+      ul {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        list-style: none;
+        margin-top: 60px;
+        padding: 0;
+
+        li a {
+          color: var(--primary);
+          transition: var(--trans);
+          font-size: 16px;
+          font-weight: 500;
+          &:hover {
+            color: var(--accent);
+          }
+        }
+      }
+    }
+
+    .close {
+      position: absolute;
+      right: 20px;
+      top: 25px;
+      svg {
+        font-size: 30px;
+      }
+    }
+  }
+}

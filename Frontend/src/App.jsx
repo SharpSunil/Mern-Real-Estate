@@ -1,15 +1,18 @@
 import React from 'react'
 import {  Routes, Route } from 'react-router-dom'
 import "./App.scss"
-import Home from './Pages/Home/Home'
+
+import LandingPage from './Pages/shared/LandingPage'
+import Navbar from './components/Header/Navbar'
 
 const App = () => {
   return (
-    
+    <>
+      <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<LandingPage />} />
       </Routes>
-   
+    </>
   )
 }
 

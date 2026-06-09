@@ -1,8 +1,8 @@
 import express from "express";
-import { protect } from "../middleware/auth.middleware.js";
+import { protect } from "../middlewares/auth.middleware.js";
 
-
-
+import Chat from "../models/Chat.model.js";
+const chatRouter = express.Router();
 
 
 chatRouter.use(protect);
@@ -96,32 +96,22 @@ chatRouter.get("/user", async (req, res) => {
         const userId = req.user._id;
         const chats = await Chat.find({
             $or: [{ buyer: userId }, { seller: userId }]
-<<<<<<< HEAD
         })
 
             .populate("buyer", "name email profilePic")
             .populate("seller", "name email profilePic")
             .populate("property", "title price images")
             .sort({ updatedAt: -1 }); //sort by most recent activity
-=======
-        }).populate("buyer", "name email profilePic").populate("seller", "name email profilePic").populate("property", "title price images")
-            .sort({ updatedAt: -1 }); // Sort by most recent chats first   
->>>>>>> 15351acd37b1a59ebb36d122518ce4e462ae3f7b
         res.json(chats);
     } catch (error) {
         res.status(500).json({
             success: false,
-<<<<<<< HEAD
             message: "Error fetching user chats",
-=======
-            message: "Error fetching chats",
->>>>>>> 15351acd37b1a59ebb36d122518ce4e462ae3f7b
             error: error.message
         })
     }
 })
 
-<<<<<<< HEAD
 //to get chat messages
 
 chatRouter.get("/:chatId", async (req, res) => {
@@ -143,23 +133,10 @@ chatRouter.get("/:chatId", async (req, res) => {
         res.status(500).json({
 
             message: "Error fetching chat details",
-=======
-//to get chat messaages
-chatRouter.get("/:chatId", async (req, res) => {
-    try {
-        const chat = await Chat.findById(req.params.chatId).populate("message.sender",
-            "name profilePic"
-        )
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Error fetching chat messages",
->>>>>>> 15351acd37b1a59ebb36d122518ce4e462ae3f7b
             error: error.message
         })
     }
 })
-<<<<<<< HEAD
 
 //to delete a entire chat (for admin or for user to delete their chat history)
 chatRouter.delete("/:chatId", async (req, res) => {
@@ -168,13 +145,13 @@ chatRouter.delete("/:chatId", async (req, res) => {
         if (!chat)
             return res.status(404).json({ message: "Chat not found" });
         //now we ensure the user is part of the chat 
-        if(chat.buyer.toString() !== req.user._id.toString() && chat.seller.toString() !== req.user._id.toString()){
+        if (chat.buyer.toString() !== req.user._id.toString() && chat.seller.toString() !== req.user._id.toString()) {
             return res.status(403).json({ message: "Not authorized to delete this chat" });
 
         }
         await Chat.findByIdAndDelete(req.params.chatId);
         res.json({ message: "Chat deleted successfully" });
-    
+
     }
     catch (error) {
         res.status(500).json({
@@ -184,6 +161,31 @@ chatRouter.delete("/:chatId", async (req, res) => {
     }
 })
 
+//to delete a specific message
+chatRouter.delete("/:chatId/message/:messageId", async (req, res) => {
+    try {
+        const chat = await Chat.findById(req.params.chatId);
+
+        if (!chat) return res.status(404).json({ message: "Chat not found" });
+
+        const message = chat.messages.id(req.params.messageId);
+        if (!message) {
+            return res.status(404).json({ message: "Message not found" });
+        }
+        //only the sender can delete this message
+        if (message.sender.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: "Not authorized to delete this message" });
+        }
+        chat.messages.pull(req.params.messageId);
+        await chat.save();
+        res.json({ message: "Message deleted successfully", chat });
+    }
+    catch (error) {
+        res.status(500).json({
+            message: "Error deleting message",
+            error: error.message
+        })
+    }
+})
+
 export default chatRouter;
-=======
->>>>>>> 15351acd37b1a59ebb36d122518ce4e462ae3f7b
