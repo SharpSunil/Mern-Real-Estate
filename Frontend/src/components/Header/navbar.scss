@@ -29,7 +29,7 @@
     //Menu StyleSheet
     .nav-links {
       background: rgba(236, 161, 161, 0.051);
-      padding: 10px 24px;
+      padding: 15px 24px;
       border-radius: 50px;
       box-shadow: var(--shadow);
       ul {
@@ -41,8 +41,15 @@
         li a {
           color: var(--primary);
           transition: var(--trans);
+          padding:10px 15px;
+           
+           border-radius:50px;
+          
           &:hover {
             color: var(--accent);
+            box-shadow: var(--shadow);
+            background:#0d94893e;
+          
           }
         }
       }
