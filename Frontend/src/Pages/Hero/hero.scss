@@ -2,7 +2,7 @@
   .hero-cont {
     display: flex;
     padding: 40px 0px;
-    max-width: 1600px;
+    max-width: 1400px;
     gap: 20px;
     .hero-left {
       display: flex;
@@ -41,7 +41,6 @@
       }
       //Search Bar Scss Start here
       .search-bar {
-        border: 1px solid red;
         background: var(--white);
         box-shadow: var(--shadow);
         padding: 20px;
@@ -52,7 +51,7 @@
         .group-first {
           display: flex;
           align-items: center;
-          gap: 15px;
+          gap: 5px;
           .icon {
             color: var(--accent);
             font-size: 20px;
@@ -60,20 +59,26 @@
           .input-box {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            padding:2px;
             label {
               font-size: 14px;
               font-weight: 700;
             }
             input {
               border: none;
-
-
-
+            }
+            select{
+              border-radius:5px;
+              padding:10px;
+              border:none;
               
             }
           }
+         
         }
+         .btn{
+            display: flex;align-items: center;gap:10px;
+          }
       }
     }
 
