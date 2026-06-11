@@ -1,4 +1,7 @@
 import React from 'react'
+import { LuShieldCheck } from "react-icons/lu";
+import { FaLocationDot } from "react-icons/fa6";
+import { IoHomeSharp } from "react-icons/io5";
 import './hero.scss'
 const Hero = () => {
     return (
@@ -9,19 +12,19 @@ const Hero = () => {
                         <div className="sec-indicator">
                             TRUSTED BY 20,000 + HOMEOWNERS
                         </div>
-                        <div className="main-heading">Find Your <span>Perfect</span>Next Chapter.</div>
+                        <div className="main-heading">Find Your <span>Perfect</span><br></br> Next Chapter.</div>
                         <div className="desc">Experience the most advanced real estate search platform. Discover verified listings, connect with top agents, and find a place you'll love.</div>
                         <div className="search-bar">
                             <div className="group-first">
 
-                                <div className="icon"></div>
+                                <div className="icon"><FaLocationDot /></div>
                                 <div className="input-box">
                                     <label>Location</label>
                                     <input type='text' placeholder='Where are you looking?' />
                                 </div>
                             </div>
                             <div className="group-first">
-                                <div className="icon"></div>
+                                <div className="icon"><IoHomeSharp /></div>
 
                                 <div className="input-box">
                                     <label>PROPERTY TYPE</label>
@@ -61,7 +64,19 @@ const Hero = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="hero-right"></div>
+                    <div className="hero-right">
+                        <div className="overlay">
+
+                        </div>
+                        <div className="new-text-box">
+                            <div className="icon"><LuShieldCheck /></div>
+                            <div className="content">
+                                <h5>Verified Listing</h5>
+                                <p className='ndesc'>Inspected by our professional team</p>
+                            </div>
+                            <div className="btnn">PRE-Approved</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
