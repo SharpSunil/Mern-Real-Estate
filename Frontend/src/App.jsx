@@ -5,6 +5,7 @@ import "./App.scss"
 import LandingPage from './Pages/shared/LandingPage'
 import Navbar from './components/Header/Navbar'
 import Footer from './components/Footer/Footer'
+import Property from './Pages/Property/Property'
 
 const App = () => {
   return (
@@ -12,6 +13,7 @@ const App = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/property" element={<Property />} />
       </Routes>
       <Footer />
     </>

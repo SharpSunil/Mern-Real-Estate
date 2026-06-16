@@ -38,5 +38,24 @@
       width: 60ch;
       text-align: center;
     }
+
+    .property-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    a{
+      color:var(--white);
+      background:var(--accent);
+      padding:5px 30px;
+      border-radius:50px;
+      margin-top:50px;
+      transition:var(--trans);
+      box-shadow: var(--shadow);
+      &:hover{
+transform:translateY(-5px);
+background:#014e47;
+      }
+    }
   }
 }
