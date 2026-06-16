@@ -1,0 +1,43 @@
+.property-main-card {
+  display: flex;
+  width: calc(100% / 3);
+
+  .card {
+    display: flex;
+    
+    border: 1px solid rgba(133, 133, 133, 0.222);
+    width: 100%;
+    height:500px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    .top-card {
+      display: flex;
+      width: 100%;
+      position: relative;
+      height:250px;
+
+      .bg-img {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+      }
+   .overlay {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 40%;
+
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.7),
+        rgba(0, 0, 0, 0)
+    );
+}
+    }
+  }
+}

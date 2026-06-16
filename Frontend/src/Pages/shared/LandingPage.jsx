@@ -3,6 +3,7 @@ import Hero from '../Hero/Hero'
 import About from '../About/About'
 import WhyUs from '../WhyUs/WhyUs'
 import WorkSec from '../Workssec/WorkSec'
+import FeaturedCollection from '../Featured-Collection/FeaturedCollection'
 
 const LandingPage = () => {
   return (
@@ -11,6 +12,7 @@ const LandingPage = () => {
       <About />
       <WhyUs />
       <WorkSec/>
+      <FeaturedCollection />
     </>
   )
 }
