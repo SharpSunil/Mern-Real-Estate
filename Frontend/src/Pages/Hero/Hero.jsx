@@ -46,9 +46,9 @@ const Hero = () => {
                                         <option value="industrial">Industrial Property</option>
                                     </select>
                                 </div>
-                               
+
                             </div>
-                             <div className="btn"><FaSearch />Search</div>
+                            <div className="btn"><FaSearch />Search</div>
                         </div>
 
                         {/* //in Number figures */}

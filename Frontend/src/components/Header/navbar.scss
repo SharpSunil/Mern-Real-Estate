@@ -1,8 +1,8 @@
 .navbar-parent {
-  background: var(--white);
+  background:rgba(255, 255, 255, 0.921);
   box-shadow: var(--shadow);
-  position: relative;
-
+  position: fixed;
+z-index:999;
   .navbar-cont-desktop {
     display: flex;
     height: 70px;

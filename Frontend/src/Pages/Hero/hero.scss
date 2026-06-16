@@ -1,4 +1,6 @@
 .hero-parent {
+  background: rgba(128, 128, 128, 0.066);
+  padding: 40px 0px;
   .hero-cont {
     display: flex;
     padding: 40px 0px;
@@ -92,17 +94,26 @@
     }
 
     .main-box {
-      border: 1px solid red;
       display: flex;
       justify-content: space-between;
-
       .first {
-        border-right: 2px solid rgba(0, 0, 0, 0.382);
+        border-right: 1px solid black;
         display: flex;
         flex-direction: column;
-        padding: 20px;
+        padding-right: 40px;
+
         &:last-child {
           border: none;
+        }
+        .number {
+          color: black;
+          font-size: 22px;
+          font-weight: 800;
+        }
+        p {
+          font-weight: 800;
+          color: black;
+          font-size: 12px;
         }
       }
     }
