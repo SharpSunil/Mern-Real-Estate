@@ -4,6 +4,8 @@ import image from "../../assets/realestate.jpg";
 import { FaRegHeart } from "react-icons/fa6";
 import { VscWorkspaceTrusted } from "react-icons/vsc";
 import { MdRemoveRedEye } from "react-icons/md";
+import { CiLocationOn } from "react-icons/ci";
+import { IoHomeOutline } from "react-icons/io5";
 const PropertyCard = () => {
     return (
         <>
@@ -32,7 +34,25 @@ const PropertyCard = () => {
                             <div className="second"><MdRemoveRedEye /><span>54</span></div>
                         </div>
                         <div className="second-box">
-                            <div className="heading">DLF URBAN Grande Towers</div>
+                            <div className="headingg">DLF URBAN Grande Towers</div>
+                            <div className="address"><CiLocationOn />Sector 150, Near Noid-Greater Noida ...</div>
+                        </div>
+                        <div className="third-box">
+                            <div className="one">
+                                <div className="icon"><IoHomeOutline /></div>
+                                <div className="num">4</div>
+                                <div className="dess">BEDS</div>
+                            </div>
+                             <div className="one">
+                                <div className="icon"><IoHomeOutline /></div>
+                                <div className="num">4</div>
+                                <div className="dess">BEDS</div>
+                            </div>
+                             <div className="one">
+                                <div className="icon"><IoHomeOutline /></div>
+                                <div className="num">4</div>
+                                <div className="dess">BEDS</div>
+                            </div>
                         </div>
                     </div>
                 </div>
