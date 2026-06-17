@@ -7,6 +7,7 @@ import image from "../../assets/realestate.jpg";
 import { PiSealCheckFill } from "react-icons/pi";
 import { GiFlatPlatform } from "react-icons/gi";
 import { IoHomeOutline } from "react-icons/io5";
+import { BiSolidMessageSquareDetail } from "react-icons/bi";
 const Property = () => {
     return (
         <>
@@ -111,7 +112,11 @@ const Property = () => {
                             <div className="second-box">
                                 <div className="top">
                                     <div className="name">SS</div>
-                                    <div className="user">Sunil <span>Verified Seller</span></div>
+                                    <div className="user">Sunil <span><PiSealCheckFill /> Verified Seller</span></div>
+                                    </div>
+                                    <div className="middle">
+                                        <div className="chat"><BiSolidMessageSquareDetail /><span>Chat</span></div>
+                                        <div className="inquire">Inquire</div>
                                     </div>
                             </div>
                         </div>

@@ -206,9 +206,62 @@
             font-size: 12px;
           }
         }
-        .second-box{
+        .second-box {
           display: flex;
-          
+          border: 1px solid rgba(148, 148, 148, 0.344);
+          padding: 20px;
+          border-radius: 10px;
+          box-shadow: var(--shadow);
+          flex-direction: column;
+          gap: 30px;
+          .top {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            .name {
+              background: rgb(9, 114, 95);
+              padding: 10px;
+              border-radius: 50%;
+              width: 60px;
+              height: 60px;
+              align-items: center;
+              justify-content: center;
+              display: flex;
+              font-size: 26px;
+              color: var(--white);
+              font-weight: 500;
+            }
+            .user {
+              display: flex;
+              flex-direction: column;
+              font-size: 20px;
+              font-weight: 600;
+              span {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                font-size: 12px;
+                font-weight: 400;
+                color: var(--accent);
+              }
+            }
+          }
+          .middle {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            .chat {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 14px;
+              gap: 10px;
+            }
+            .inquire {
+              font-size: 14px;
+              font-weight: 600;
+            }
+          }
         }
       }
     }
