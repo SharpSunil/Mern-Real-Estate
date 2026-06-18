@@ -262,6 +262,58 @@
               font-weight: 600;
             }
           }
+          .last-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            background: rgba(128, 128, 128, 0.051);
+            padding: 10px;
+            border-radius: 5px;
+            p {
+              text-align: center;
+              font-size: 12px;
+              font-weight: 400;
+            }
+            .btn {
+              font-size: 14px;
+              width: 100%;
+              align-items: center;
+              display: flex;
+              justify-content: center;
+              border-radius: 10px;
+            }
+          }
+        }
+      }
+    }
+
+    //second-new-box
+    .second-main {
+      display: flex;
+      flex-direction: column;
+      margin-top: 50px;
+      background: white;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      border-radius: 10px;
+      .heading {
+        font-family:
+          ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+          "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 25px;
+        color: rgb(17, 24, 39);
+      }
+      .card {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.123);
+        padding: 20px 0;
+        display: flex;
+        justify-content: space-between;
+
+        &:first-child {
+          border-top: 1px solid rgba(0, 0, 0, 0.123);
         }
       }
     }

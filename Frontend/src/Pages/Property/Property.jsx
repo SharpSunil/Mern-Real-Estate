@@ -113,15 +113,34 @@ const Property = () => {
                                 <div className="top">
                                     <div className="name">SS</div>
                                     <div className="user">Sunil <span><PiSealCheckFill /> Verified Seller</span></div>
-                                    </div>
-                                    <div className="middle">
-                                        <div className="chat"><BiSolidMessageSquareDetail /><span>Chat</span></div>
-                                        <div className="inquire">Inquire</div>
-                                    </div>
+                                </div>
+                                <div className="middle">
+                                    <div className="chat"><BiSolidMessageSquareDetail /><span>Chat</span></div>
+                                    <div className="inquire">Inquire</div>
+                                </div>
+                                <div className="last-box">
+                                    <p>Please login as a buyer to send inquiries.</p>
+                                    <div className="btn">Login</div>
+                                </div>
                             </div>
                         </div>
 
 
+                    </div>
+
+                    {/* //Bottom side second -new - box */}
+                    <div className="second-main">
+                        <div className="heading">Property Details</div>
+                        <div className="card">
+                            <div className="idd">Property ID</div>
+                            <div className="added-on">674D4564D <span>Added On</span></div>
+                            <div className="date">04/15/2026</div>
+                        </div>
+                        <div className="card">
+                            <div className="idd">Property Type</div>
+                            <div className="added-on">Flat <span>Status</span></div>
+                            <div className="date">For Sale</div>
+                        </div>
                     </div>
                 </div>
             </div>
