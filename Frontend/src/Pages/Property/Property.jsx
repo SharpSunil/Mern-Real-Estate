@@ -8,6 +8,8 @@ import { PiSealCheckFill } from "react-icons/pi";
 import { GiFlatPlatform } from "react-icons/gi";
 import { IoHomeOutline } from "react-icons/io5";
 import { BiSolidMessageSquareDetail } from "react-icons/bi";
+import { FaArrowRightLong } from "react-icons/fa6";
+import { Link } from 'react-router-dom';
 const Property = () => {
     return (
         <>
@@ -140,6 +142,16 @@ const Property = () => {
                             <div className="idd">Property Type</div>
                             <div className="added-on">Flat <span>Status</span></div>
                             <div className="date">For Sale</div>
+                        </div>
+                    </div>
+                    {/* //Last Listing section  */}
+                    <div className="last-third">
+                        <div className="top">
+                            <div className="headings">Similar Properties <span>Listing you might like in Bengaluru.</span></div>
+                        <Link to="#" className="list-btn">All Listing <span><FaArrowRightLong /></span></Link>
+                        </div>
+                        <div className="bottom">
+                            <p>No similar properties found in this location.</p>
                         </div>
                     </div>
                 </div>
