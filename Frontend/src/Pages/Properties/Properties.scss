@@ -9,6 +9,9 @@
     //left side SCSS
     .left-sidebar {
       width: 20%;
+      position: sticky;
+      top:100px;
+      height:fit-content;
     }
 
     // right side scss

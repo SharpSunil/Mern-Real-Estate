@@ -5,7 +5,7 @@
   box-shadow: var(--shadow);
   padding: 10px;
   border-radius: 10px;
-  gap: 20px;
+  gap: 30px;
   .first {
     display: flex;
     align-items: center;
@@ -152,6 +152,44 @@
           width: 16px;
           height: 16px;
           cursor: pointer;
+        }
+      }
+    }
+  }
+
+  //Bedrooms Number
+  .bedroom {
+    .heading {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .rooms {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+
+      p {
+        width: 40px;
+        height: 40px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--trans);
+        background: #fff;
+
+        &:hover {
+          border-color: var(--accent);
+        }
+
+        &.active {
+          background: var(--accent);
+          color: #fff;
+          border-color: var(--accent);
         }
       }
     }

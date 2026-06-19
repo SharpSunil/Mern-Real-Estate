@@ -13,6 +13,8 @@ const Sidebar = () => {
         return `₹${(value / 100000).toFixed(0)} L`;
     };
 
+    const [selectedBhk, setSelectedBhk] = useState("");
+
     return (
         <div className="sidebar">
             {/* Filters */}
@@ -95,11 +97,49 @@ const Sidebar = () => {
                     </label>
                 </div>
             </div>
-            
+
             {/* Bedrooms Number */}
+
             <div className="bedroom">
                 <div className="heading">Bedrooms (BHK)</div>
-                .room
+
+                <div className="rooms">
+                    {["1", "2", "3", "4", "5+"].map((bhk) => (
+                        <p
+                            key={bhk}
+                            className={selectedBhk === bhk ? "active" : ""}
+                            onClick={() => setSelectedBhk(bhk)}
+                        >
+                            {bhk}
+                        </p>
+                    ))}
+                </div>
+            </div>
+
+
+            {/* Furnishing */}
+            <div className="property-type">
+                <div className="heading">Furnishing</div>
+                <div className="checkbox-group">
+                    <label className="checkbox-item">
+                        <input type="checkbox" />
+                        <span className="checkmark"></span>
+                        Furnished
+                    </label>
+
+                    <label className="checkbox-item">
+                        <input type="checkbox" />
+                        <span className="checkmark"></span>
+                        Semi Furnished
+                    </label>
+
+                    <label className="checkbox-item">
+                        <input type="checkbox" />
+                        <span className="checkmark"></span>
+                        Unfurnished
+                    </label>
+
+                </div>
             </div>
         </div>
     );
