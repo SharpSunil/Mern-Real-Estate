@@ -2,11 +2,10 @@
   background: #f8fafc;
 
   .login-cont {
-  
     display: flex;
     align-items: center;
     justify-content: center;
-    height:100dvh;
+    height: 100dvh;
     .form-box {
       max-width: 400px;
 
@@ -18,7 +17,7 @@
       flex-direction: column;
 
       .heading {
-        font-size:20px;
+        font-size: 20px;
         font-weight: 700;
         text-align: center;
         color: var(--accent);
@@ -67,7 +66,7 @@
           flex-direction: column;
           gap: 8px;
           position: relative;
-          margin-top:30px;
+          margin-top: 30px;
 
           .password-box {
             position: relative;
