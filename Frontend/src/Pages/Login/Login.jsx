@@ -37,7 +37,7 @@ const Login = () => {
                                     </span>
                                 </div>
 
-                                <Link to="/login">Forgot Password?</Link>
+                                <Link to="/forgot-password">Forgot Password?</Link>
                             </div>
 
                             <button className="btn">Sign In</button>

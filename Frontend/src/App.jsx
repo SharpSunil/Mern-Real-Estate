@@ -9,6 +9,7 @@ import Property from './Pages/Property/Property'
 import Properties from './Pages/Properties/Properties'
 import Login from './Pages/Login/Login'
 import Register from './Pages/Register/Register'
+import ForgotPassword from './Pages/Forgot-Password/ForgotPassword'
 
 const App = () => {
   return (
@@ -16,10 +17,11 @@ const App = () => {
       <Navbar />
       <Routes>
         <Route path='/login' element={<Login />} />
-        <Route path="/register" element={<Register /> } />
+        <Route path="/register" element={<Register />} />
         <Route path="/" element={<LandingPage />} />
         <Route path="/properties" element={<Properties />} />
         <Route path="/property" element={<Property />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
       <Footer />
     </>
