@@ -1,0 +1,159 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  box-shadow: var(--shadow);
+  padding: 10px;
+  border-radius: 10px;
+  gap: 20px;
+  .first {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .heading {
+      svg {
+        color: var(--accent);
+      }
+    }
+    p {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 500;
+    }
+  }
+  //second scss
+  .search {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    .heading {
+      font-size: 14px;
+    }
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 10px;
+      padding: 10px;
+
+      &:focus-within {
+        border-color: var(--accent);
+        box-shadow: var(--shadow);
+      }
+
+      .search-icon {
+        color: rgba(0, 0, 0, 0.45);
+        font-size: 18px;
+      }
+
+      input {
+        border: none;
+        outline: none;
+
+        color: #333;
+
+        &::placeholder {
+          color: rgba(0, 0, 0, 0.45);
+        }
+      }
+    }
+  }
+
+  //Price Range Filter
+  .price-range {
+    border-radius: 10px;
+    padding: 10px;
+    .first {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+
+      .heading {
+        font-size: 16px;
+        font-weight: 600;
+        color: #111827;
+      }
+
+      .price {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0d9488;
+      }
+    }
+
+    .slider {
+      width: 100%;
+      appearance: none;
+      height: 7px;
+      border-radius: 20px;
+      outline: none;
+
+      &::-webkit-slider-thumb {
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--accent);
+        cursor: pointer;
+      }
+
+      &::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border: none;
+        border-radius: 50%;
+        background: var(--accent);
+        cursor: pointer;
+      }
+    }
+
+    .labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+
+      span {
+        font-size: 13px;
+        color: #94a3b8;
+      }
+    }
+  }
+
+  //PROPERTY TYPE
+  .property-type {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+
+    .heading {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.7);
+
+        input[type="checkbox"] {
+          accent-color: var(--accent);
+          width: 16px;
+          height: 16px;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
