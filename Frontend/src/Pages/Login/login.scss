@@ -7,7 +7,7 @@
     justify-content: center;
     height: 100dvh;
     .form-box {
-      max-width: 400px;
+      max-width: 450px;
 
       background: #fff;
       padding: 40px;
@@ -40,7 +40,6 @@
           font-size: 14px;
           font-weight: 600;
           color: var(--black);
-          margin-bottom: 5px;
         }
 
         input {
@@ -64,9 +63,8 @@
         .second-box {
           display: flex;
           flex-direction: column;
-          gap: 8px;
+
           position: relative;
-          margin-top: 30px;
 
           .password-box {
             position: relative;
