@@ -23,7 +23,7 @@ const App = () => {
         <Route path="/property" element={<Property />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
-      <Footer />
+      {/* <Footer /> */}
     </>
   )
 }

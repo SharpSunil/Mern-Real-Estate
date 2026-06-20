@@ -1,18 +1,20 @@
 .navbar-parent {
-  background:rgba(255, 255, 255, 0.921);
+  background: rgba(255, 255, 255, 0.921);
   box-shadow: var(--shadow);
   position: fixed;
-z-index:999;
+  z-index: 999;
   .navbar-cont-desktop {
     display: flex;
     height: 70px;
     justify-content: space-between;
     align-items: center;
+ 
     // Logo and Icons Stylesheet
     .logo {
       display: flex;
       align-items: center;
       gap: 5px;
+       cursor:pointer;
       svg {
         font-size: 35px;
         color: var(--white);
@@ -41,32 +43,32 @@ z-index:999;
         li a {
           color: var(--primary);
           transition: var(--trans);
-          padding:10px 15px;
-           
-           border-radius:50px;
-          
+          padding: 10px 15px;
+
+          border-radius: 50px;
+
           &:hover {
             color: var(--accent);
             box-shadow: var(--shadow);
-            background:#0d94893e;
-          
+            background: #0d94893e;
           }
         }
       }
     }
-    @media only screen and (max-width: 570px) {
+    @media only screen and (max-width: 670px) {
       .nav-links {
         display: none;
       }
     }
     .menu-icon {
       display: none;
+       cursor:pointer;
       svg {
         color: var(--primary);
         font-size: 32px;
         font-weight: 700;
       }
-      @media only screen and (max-width: 570px) {
+      @media only screen and (max-width: 670px) {
         display: block;
       }
     }
@@ -89,6 +91,7 @@ z-index:999;
       display: flex;
       align-items: center;
       gap: 5px;
+      cursor:pointer;
 
       svg {
         font-size: 35px;
@@ -96,6 +99,7 @@ z-index:999;
         background: var(--accent);
         padding: 5px;
         border-radius: 5px;
+       
       }
       span {
         font-size: 22px;
@@ -129,6 +133,7 @@ z-index:999;
       position: absolute;
       right: 20px;
       top: 25px;
+      cursor:pointer;
       svg {
         font-size: 30px;
       }

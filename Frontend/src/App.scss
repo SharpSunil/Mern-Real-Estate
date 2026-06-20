@@ -1,12 +1,12 @@
 :root {
-   --primary: #0F172A;
-  --accent: #0D9488;
-  --white: #FFFFFF;
-  --text: #64748B;
-  --grey: #F8FAFC;
+  --primary: #0f172a;
+  --accent: #0d9488;
+  --white: #ffffff;
+  --text: #64748b;
+  --grey: #f8fafc;
   --gap: 20px;
 
-  --max-width: 1200px;
+  --max-width: 1260px;
   --trans: all 0.2s ease-in-out;
   --shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
   --rad: 10px;
@@ -79,7 +79,7 @@ p {
 }
 
 .parent {
-  width: 100vw;
+  width: 100%;
 
   .cont {
     max-width: var(--max-width);

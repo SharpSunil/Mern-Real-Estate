@@ -13,7 +13,7 @@ const Hero = () => {
                         <div className="sec-indicator">
                             TRUSTED BY 20,000 + HOMEOWNERS
                         </div>
-                        <div className="main-heading">Find Your <span>Perfect</span><br></br> Next Chapter.</div>
+                        <div className="main-heading">Find Your <span>Perfect</span> Next Chapter.</div>
                         <div className="desc">Experience the most advanced real estate search platform. Discover verified listings, connect with top agents, and find a place you'll love.</div>
                         <div className="search-bar">
                             <div className="group-first">

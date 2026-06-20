@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
 import { CgMenuRight } from "react-icons/cg";
 import { IoClose } from "react-icons/io5";
@@ -14,9 +15,9 @@ const Navbar = () => {
             <span>RealEstate</span></div>
           <div className="nav-links">
             <ul>
-              <li><a href="/">Brouse Properties</a></li>
-              <li><a href="/login">Login</a></li>
-              <li><a href="/registration">Registration</a></li>
+              <li><Link to="/">Browse Properties</Link></li>
+              <li><Link to="/login">Login</Link></li>
+              <li><Link to="/register">Registration</Link></li>
             </ul>
           </div>
           <div className="menu-icon" onClick={() => setOpen(true)}><CgMenuRight /></div>
@@ -32,9 +33,9 @@ const Navbar = () => {
 
             <div className="menu-list-mb">
               <ul>
-                <li><a href="/">Brouse Properties</a></li>
-                <li><a href="/login">Login</a></li>
-                <li><a href="/registration">Registration</a></li>
+                <li><Link to="/">Browse Properties</Link></li>
+                <li><Link to="/login">Login</Link></li>
+                <li><Link to="/register">Registration</Link></li>
               </ul>
             </div>
             <div className="close" onClick={() => setOpen(false)}><IoClose /></div>
