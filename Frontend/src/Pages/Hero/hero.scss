@@ -208,14 +208,14 @@
       }
       .hero-left {
         .main-heading {
-          font-size: 58px;
-          line-height: 62px;
+          font-size: 52px;
+          line-height: 58px;
         }
         .search-bar {
           flex-wrap: wrap;
           gap: 10px;
-           
-         justify-content: center;
+
+          justify-content: center;
         }
       }
     }
@@ -223,6 +223,7 @@
 
   @media only screen and (max-width: 460px) {
     .hero-cont {
+      margin-bottom: -60px;
       .hero-right {
         .new-text-box {
           flex-wrap: wrap;
@@ -238,24 +239,23 @@
       }
       .hero-left {
         .main-heading {
-          font-size: 48px;
+          font-size: 38px;
           line-height: 52px;
         }
         .search-bar {
-       
           .group-first {
             width: 100%;
             background: rgba(128, 128, 128, 0.059);
             padding: 10px;
             border-radius: 10px;
-            
           }
         }
 
         .main-box {
           flex-wrap: wrap;
           margin-top: 20px;
-          gap: 10px;
+          justify-content: center;
+          gap: 30px;
         }
       }
     }
