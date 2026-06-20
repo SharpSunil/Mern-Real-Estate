@@ -124,4 +124,43 @@
       }
     }
   }
+
+  @media only screen and (max-width: 1180px) {
+    .why-us-cont {
+      flex-direction: column-reverse;
+      .why-right {
+        width: 100%;
+
+        .heading {
+          font-size: 40px;
+          line-height: 44px;
+          padding-bottom: 20px;
+        }
+      }
+      .why-left {
+        width: 100%;
+      }
+    }
+  }
+}
+@media only screen and (max-width: 500px) {
+  .why-us-parent {
+    padding: 40px 0px;
+    .why-us-cont {
+      .why-left {
+        .main-card {
+          .card {
+            padding: 20px;
+
+            flex: 1 1 calc(100% - 20px);
+            align-items: center;
+            justify-content: center;
+            .des {
+              text-align: center;
+            }
+          }
+        }
+      }
+    }
+  }
 }

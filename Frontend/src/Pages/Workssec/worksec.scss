@@ -1,5 +1,5 @@
 .worksec-parent {
-  padding: 8% 0px;
+  padding: 80px 0px;
   .work-cont {
     display: flex;
     flex-direction: column;
@@ -40,8 +40,8 @@
     .main-card-sec {
       display: flex;
       gap: 20px;
-    
-      padding-top:40px;
+
+      padding-top: 40px;
       .card {
         display: flex;
         flex-direction: column;
@@ -53,7 +53,7 @@
         gap: 10px;
         box-shadow: var(--shadow);
         transition: var(--trans);
-          position: relative;
+        position: relative;
         &:hover {
           border: 1px solid var(--accent);
           transform: translateY(-5px);
@@ -65,8 +65,8 @@
           color: var(--white);
           padding: 15px;
           border-radius: 50px;
-          width:60px;
-          height:60px;
+          width: 60px;
+          height: 60px;
           font-size: 24px;
           font-weight: 700;
           box-shadow: var(--shadow);
@@ -80,7 +80,7 @@
           padding: 10px;
           transition: var(--trans);
           width: fit-content;
-          margin-top:30px;
+          margin-top: 30px;
         }
         .title {
           padding-top: 20px;
@@ -99,5 +99,26 @@
         }
       }
     }
+  }
+  @media only screen and (max-width: 1000px) {
+    .work-cont {
+      .heading {
+        font-size: 40px;
+        text-align: center;
+        line-height: 44px;
+      }
+      .des {
+        width: 90%;
+      }
+      .main-card-sec {
+        flex-wrap: wrap;
+        gap: 40px;
+      }
+    }
+  }
+}
+@media only screen and (max-width: 1000px) {
+  .worksec-parent {
+    padding: 40px 0px;
   }
 }

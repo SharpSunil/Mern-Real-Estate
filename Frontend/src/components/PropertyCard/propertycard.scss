@@ -1,6 +1,9 @@
 .property-main-card {
   display: flex;
- width: calc((100% - 40px) / 3);
+ width: calc(33.333% - 14px);
+ flex-wrap: wrap;
+ padding:0px 10px;
+ 
 
   .card {
     display: flex;
@@ -12,7 +15,7 @@
     overflow: hidden;
     box-shadow: var(--shadow);
     transition: var(--trans);
-    cursor:pointer;
+    cursor: pointer;
 
     &:hover {
       transform: translateY(-5px);
@@ -171,7 +174,7 @@
           line-height: 22.5px;
           color: rgb(17, 24, 39);
         }
-       
+
         .address {
           display: flex;
           align-items: center;
@@ -224,4 +227,20 @@
       }
     }
   }
+
 }
+
+/* Tablet */
+@media only screen and (max-width: 1000px) {
+  .property-main-card {
+    width: calc(50% - 10px);
+  }
+}
+
+/* Mobile */
+@media only screen and (max-width: 600px) {
+  .property-main-card {
+    width: 100%;
+  }
+}
+
