@@ -20,7 +20,11 @@ const PORT = process.env.PORT || 5001;
 connectDB();
 
 // Middleware
-const allowedOrigins = [process.env.FRONTEND_URL, "http://localhost:3000"].filter(Boolean); // Filter out undefined values
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:3000",
+  "http://localhost:5173"
+].filter(Boolean); // Filter out undefined values
 app.use(cors(
   {
     origin: function (origin, callback) {
@@ -72,10 +76,10 @@ io.on("connection", (socket) => {
   socket.on("sendMessage", (data) => {
     io.to(data.chatId).emit("receiveMessage", data);
   });
-  
+
   socket.on("disconnect", () => {
     console.log("User disconnected: " + socket.id);
-  }); 
+  });
 });
 
 server.listen(PORT, () => {
