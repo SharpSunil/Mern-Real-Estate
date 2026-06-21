@@ -100,7 +100,7 @@ const FeaturedCollection = () => {
         </div>
 
         {/* view more properties button  */}
-        <Link to="/">Discover More Properties  </Link>
+        <Link to="/properties">Discover More Properties  </Link>
       </div>
     </div>
   );

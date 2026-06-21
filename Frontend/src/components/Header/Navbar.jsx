@@ -11,11 +11,15 @@ const Navbar = () => {
       <div className="navbar-parent parent">
         <div className="navbar-cont-desktop cont">
           {/* //Desktop menu */}
-          <div className="logo"><FaHome />
-            <span>RealEstate</span></div>
+          <div className="logo">
+            <Link to="/">
+              <FaHome />
+              <span>RealEstate</span>
+            </Link>
+          </div>
           <div className="nav-links">
             <ul>
-              <li><Link to="/">Browse Properties</Link></li>
+              <li><Link to="/properties">Browse Properties</Link></li>
               <li><Link to="/login">Login</Link></li>
               <li><Link to="/register">Registration</Link></li>
             </ul>
@@ -28,12 +32,16 @@ const Navbar = () => {
           <div className="navbar-cont-mobile cont">
             {/* //mobile menu */}
 
-            <div className="mobile-logo"><FaHome />
-              <span>RealEstate</span></div>
+            <div onClick={() => setOpen(false)} className="mobile-logo">
+              <Link to="/">
+                <FaHome />
+                <span>RealEstate</span>
+              </Link>
+            </div>
 
-            <div className="menu-list-mb">
+            <div onClick={() => setOpen(false)} className="menu-list-mb">
               <ul>
-                <li><Link to="/">Browse Properties</Link></li>
+                <li><Link to="/properties">Browse Properties</Link></li>
                 <li><Link to="/login">Login</Link></li>
                 <li><Link to="/register">Registration</Link></li>
               </ul>

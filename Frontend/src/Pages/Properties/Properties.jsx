@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
-import './Properties.scss'
-import PropertyCard from '../../components/PropertyCard/PropertyCard';
+import React, { useState } from "react";
+import "./Properties.scss";
+import PropertyCard from "../../components/PropertyCard/PropertyCard";
 import { MdSpaceDashboard } from "react-icons/md";
 import { IoMenu } from "react-icons/io5";
-import Sidebar from '../../components/PropertySidebar/Sidebar';
+import Sidebar from "../../components/PropertySidebar/Sidebar";
+import { FaFilter } from "react-icons/fa";
+import { IoClose } from "react-icons/io5";
 
 const dummyProperties = [
     {
@@ -12,8 +14,7 @@ const dummyProperties = [
         price: "₹1,65,00,000",
         type: "FLAT",
         views: 54,
-        address:
-            "Tower B, DLF Urban Grande Towers, Sector 150, Near Noida-Greater Noida Expressway, Gautam Buddha Nagar, Uttar Pradesh 201310",
+        address: "Sector 150, Noida",
         beds: 4,
         baths: 4,
         area: 2400,
@@ -24,8 +25,7 @@ const dummyProperties = [
         price: "₹1,20,00,000",
         type: "APARTMENT",
         views: 31,
-        address:
-            "Flat No. 1204, Prestige Residency, Plot No. 45, Sector 137, Noida Expressway, Gautam Buddha Nagar, Uttar Pradesh 201305",
+        address: "Sector 137, Noida",
         beds: 3,
         baths: 3,
         area: 1800,
@@ -41,69 +41,82 @@ const dummyProperties = [
         baths: 2,
         area: 1400,
     },
-    {
-        _id: 4,
-        title: "Tata Elite Homes",
-        price: "₹2,10,00,000",
-        type: "VILLA",
-        views: 67,
-        address:
-            "Penthouse 2501, Skyview Towers, Plot No. 78A, Sector 150, Adjacent to Noida-Greater Noida Expressway, Near Shaheed Bhagat Singh Park, Gautam Buddha Nagar, Uttar Pradesh 201310, India",
-        beds: 5,
-        baths: 5,
-        area: 3200,
-    },
-    {
-        _id: 5,
-        title: "Sobha Greens",
-        price: "₹1,45,00,000",
-        type: "FLAT",
-        views: 48,
-        address: "Noida Extension",
-        beds: 3,
-        baths: 3,
-        area: 2100,
-    },
-    {
-        _id: 6,
-        title: "Lodha Paradise",
-        price: "₹1,75,00,000",
-        type: "PENTHOUSE",
-        views: 75,
-        address: "Sector 78, Noida",
-        beds: 4,
-        baths: 4,
-        area: 2600,
-    },
 ];
+
 const Properties = () => {
+    // Grid/List View State
     const [activeView, setActiveView] = useState("grid");
 
-    
+    // Mobile Sidebar State
+    const [showSidebar, setShowSidebar] = useState(false);
+
     return (
         <>
+            {/* Overlay for Mobile Sidebar */}
+            {showSidebar && (
+                <div
+                    className="sidebar-overlay"
+                    onClick={() => setShowSidebar(false)}
+                ></div>
+            )}
+
             <div className="properties-parent parent">
                 <div className="properties-cont cont">
-                    <div className="left-sidebar"><Sidebar /></div>
+
+                    {/* Left Sidebar */}
+                    <div className={`left-sidebar ${showSidebar ? "show" : ""}`}>
+
+                        {/* Close Button - Mobile Only */}
+                        <div
+                            className="close-sidebar"
+                            onClick={() => setShowSidebar(false)}
+                        >
+                            <IoClose />
+                        </div>
+
+                        <Sidebar />
+                    </div>
+
+                    {/* Right Content */}
                     <div className="right-side">
+
+                        {/* Mobile Filter Button */}
+                        <div
+                            className="new-box-popup"
+                            onClick={() => setShowSidebar(true)}
+                        >
+                            <FaFilter />
+                            <span>Show Filters & Searches</span>
+                        </div>
+
+                        {/* Top Toolbar */}
                         <div className="top-sidebar">
-                            <p>Showing <span>9</span> properties</p>
+                            <p>
+                                Showing <span>{dummyProperties.length}</span> properties
+                            </p>
+
                             <div className="last-box">
+
+                                {/* View Toggle */}
                                 <div className="first">
                                     <div
-                                        className={`icon-box ${activeView === "grid" ? "active" : ""}`}
+                                        className={`icon-box ${activeView === "grid" ? "active" : ""
+                                            }`}
                                         onClick={() => setActiveView("grid")}
                                     >
                                         <MdSpaceDashboard />
                                     </div>
 
                                     <div
-                                        className={`icon-box ${activeView === "list" ? "active" : ""}`}
+                                        className={`icon-box ${activeView === "list" ? "active" : ""
+                                            }`}
                                         onClick={() => setActiveView("list")}
                                     >
                                         <IoMenu />
                                     </div>
                                 </div>
+
+                                {/* Sort Dropdown */}
                                 <div className="second">
                                     <label htmlFor="sort">Sort:</label>
                                     <select id="sort">
@@ -114,11 +127,14 @@ const Properties = () => {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Property Cards */}
                         <div className="card-sections">
                             {dummyProperties.map((property) => (
                                 <PropertyCard
                                     key={property._id}
                                     property={property}
+                                    view={activeView}
                                 />
                             ))}
                         </div>
@@ -126,7 +142,7 @@ const Properties = () => {
                 </div>
             </div>
         </>
-    )
-}
+    );
+};
 
-export default Properties
+export default Properties;

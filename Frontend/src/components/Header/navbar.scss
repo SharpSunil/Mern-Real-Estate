@@ -10,24 +10,31 @@
     align-items: center;
  
     // Logo and Icons Stylesheet
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-       cursor:pointer;
-      svg {
-        font-size: 35px;
-        color: var(--white);
-        background: var(--accent);
-        padding: 5px;
-        border-radius: 5px;
-      }
-      span {
-        font-size: 22px;
-        font-weight: 800;
-        color: #0d6e59;
-      }
-    }
+   .logo {
+  a {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  svg {
+    font-size: 35px;
+    color: var(--white);
+    background: var(--accent);
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  span {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0d6e59;
+  }
+}
+
+
     //Menu StyleSheet
     .nav-links {
       background: rgba(236, 161, 161, 0.051);
@@ -88,25 +95,28 @@
     padding: 20px;
     width: 70%;
     .mobile-logo {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      cursor:pointer;
+  a {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    color: inherit;
+  }
 
-      svg {
-        font-size: 35px;
-        color: var(--white);
-        background: var(--accent);
-        padding: 5px;
-        border-radius: 5px;
-       
-      }
-      span {
-        font-size: 22px;
-        font-weight: 800;
-        color: #0d6e59;
-      }
-    }
+  svg {
+    font-size: 35px;
+    color: var(--white);
+    background: var(--accent);
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  span {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0d6e59;
+  }
+}
 
     .menu-list-mb {
       ul {

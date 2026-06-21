@@ -10,7 +10,7 @@ import { FaUsers } from "react-icons/fa";
 import { FaCompressArrowsAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-const PropertyCard = ({ property }) => {
+const PropertyCard = ({ property, view }) => {
     const navigate = useNavigate();
 
     const handleCardClick = () => {
@@ -33,7 +33,7 @@ const PropertyCard = ({ property }) => {
     };
 
     return (
-        <div className="property-main-card">
+       <div className={`property-main-card ${view}`}>
             <div className="card" onClick={handleCardClick}>
                 <div className="top-card">
                     <div

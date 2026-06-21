@@ -148,7 +148,7 @@ const Property = () => {
                     <div className="last-third">
                         <div className="top">
                             <div className="headings">Similar Properties <span>Listing you might like in Bengaluru.</span></div>
-                        <Link to="#" className="list-btn">All Listing <span><FaArrowRightLong /></span></Link>
+                            <Link to="#" className="list-btn">All Listing <span><FaArrowRightLong /></span></Link>
                         </div>
                         <div className="bottom">
                             <p>No similar properties found in this location.</p>

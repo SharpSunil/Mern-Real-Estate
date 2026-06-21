@@ -23,6 +23,7 @@
       font-weight: 800;
       line-height: 70px;
       color: rgb(17, 24, 39);
+      text-align: center;
       span {
         color: var(--accent);
       }
@@ -43,6 +44,8 @@
       display: flex;
       flex-wrap: wrap;
       width:100%;
+      gap:14px;
+      align-items: center;justify-content: center;
     }
     a {
       color: var(--white);
@@ -55,6 +58,21 @@
       &:hover {
         transform: translateY(-5px);
         background: #014e47;
+      }
+    }
+  }
+}
+@media only screen and (max-width:1000px){
+  .featured-parent{
+    padding:40px 0px;
+    .featured-cont{
+      .heading{
+        font-size:40px;
+
+      }
+      .des{
+        width: 90%;
+        margin-top: -20px;
       }
     }
   }

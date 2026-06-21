@@ -312,6 +312,7 @@
         padding: 10px 0;
         display: flex;
         justify-content: space-between;
+        flex-wrap:wrap;
         .idd {
           color: rgba(0, 0, 0, 0.407);
           font-size: 14px;
@@ -386,6 +387,37 @@
         box-shadow:var(--shadow);
         font-size:12px;
         height:200px;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width:1000px){
+  .property-parent{
+    padding:40px 0px;
+    .property-cont{
+
+      .first-new-box{
+        flex-direction: column;
+        .left-side-box{
+          width:100%;
+          .heading{
+            font-size: 40px;
+          }
+          .new-desc-box, .amenities-box{
+            h4{
+              text-align: left;
+            }
+          }
+        }
+        .right-side-box{
+          width: 100%;
+          .first-box{
+            h5{
+              text-align: left;
+            }
+          }
+        }
       }
     }
   }

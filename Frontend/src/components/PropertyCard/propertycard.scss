@@ -1,9 +1,27 @@
 .property-main-card {
   display: flex;
- width: calc(33.333% - 14px);
- flex-wrap: wrap;
- padding:0px 10px;
- 
+  width: calc(33.333% - 10px);
+  flex-wrap: wrap;
+  transition: var(--trans);
+
+  /* LIST VIEW */
+  &.list {
+    width: 100%;
+
+    .card {
+      flex-direction: row;
+      height: 320px;
+
+      .top-card {
+        width: 40%;
+        height: 100%;
+      }
+
+      .bottom-card {
+        width: 60%;
+      }
+    }
+  }
 
   .card {
     display: flex;
@@ -19,10 +37,12 @@
 
     &:hover {
       transform: translateY(-5px);
+
       .bg-img {
         transform: scale(1.15);
       }
     }
+
     .top-card {
       display: flex;
       width: 100%;
@@ -32,49 +52,42 @@
 
       .bg-img {
         position: absolute;
-        height: 100%;
         width: 100%;
+        height: 100%;
         background-size: cover;
         background-repeat: no-repeat;
-        background-position: center center;
+        background-position: center;
         transition: var(--trans);
-        overflow: hidden;
       }
+
       .overlay {
         position: absolute;
         left: 0;
         bottom: 0;
         width: 100%;
         height: 40%;
-
         background: linear-gradient(
           to top,
           rgba(0, 0, 0, 0.9),
           rgba(0, 0, 0, 0.1)
         );
       }
+
       .content {
         position: absolute;
-        display: flex;
         top: 10px;
         left: 10px;
-
-        width: 100%;
+        display: flex;
         gap: 10px;
+
         .btn1 {
           background: rgb(241, 240, 240);
-          display: flex;
-          align-items: center;
           padding: 5px 15px;
           border-radius: 50px;
-          font-family:
-            ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-            "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
           font-size: 12px;
           font-weight: 700;
-          line-height: 16px;
-          color: rgb(17, 24, 39);
         }
+
         .btn2 {
           display: flex;
           gap: 10px;
@@ -82,19 +95,16 @@
           color: white;
           padding: 5px 15px;
           border-radius: 50px;
-          font-family:
-            ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-            "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
           font-size: 12px;
           font-weight: 700;
-          line-height: 16px;
-          color: rgb(255, 255, 255);
+
           .icon {
             display: flex;
             align-items: center;
           }
         }
       }
+
       .like {
         position: absolute;
         right: 10px;
@@ -106,73 +116,61 @@
         align-items: center;
         border-radius: 50%;
         font-size: 20px;
-        transition: var(--trans);
         cursor: pointer;
+        transition: var(--trans);
+
         &:hover {
           color: rgb(243, 60, 91);
         }
       }
+
       .price {
         position: absolute;
         bottom: 10px;
         left: 20px;
-        font-family:
-          ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-          "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
         font-size: 24px;
         font-weight: 800;
-        line-height: 30px;
-        color: rgb(255, 255, 255);
+        color: white;
       }
     }
 
-    // Bottom Card
     .bottom-card {
       display: flex;
+      flex-direction: column;
       padding: 20px;
       gap: 10px;
-      flex-direction: column;
+
       .first-box {
         display: flex;
         justify-content: space-between;
-        width: 100%;
+
         .first {
-          font-family:
-            ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-            "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
           font-size: 12px;
           font-weight: 700;
-          line-height: 19.5px;
           color: rgb(13, 148, 136);
         }
+
         .second {
           display: flex;
           align-items: center;
           gap: 10px;
+
           span {
-            font-family:
-              ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-              "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
             font-size: 13px;
             font-weight: 600;
-            line-height: 21.125px;
-            color: rgb(17, 24, 39);
           }
         }
       }
+
       .second-box {
         display: flex;
         flex-direction: column;
         border-bottom: 1px solid rgba(0, 0, 0, 0.085);
         padding-bottom: 10px;
+
         .headingg {
-          font-family:
-            ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-            "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
           font-size: 18px;
           font-weight: 700;
-          line-height: 22.5px;
-          color: rgb(17, 24, 39);
         }
 
         .address {
@@ -180,10 +178,8 @@
           align-items: center;
           gap: 6px;
           color: rgba(17, 24, 39, 0.622);
-          font-family:
-            ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-            "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
           font-size: 14px;
+
           span {
             overflow: hidden;
             text-overflow: ellipsis;
@@ -192,55 +188,77 @@
           }
         }
       }
+
       .third-box {
         display: flex;
         padding-bottom: 20px;
+
         .one {
           width: calc(100% / 3);
           display: flex;
           flex-direction: column;
-
           align-items: center;
           border-right: 1px solid rgba(0, 0, 0, 0.085);
+
           .icon {
             font-size: 16px;
             color: rgba(0, 0, 0, 0.54);
           }
+
           .dess {
             font-size: 12px;
             color: rgba(0, 0, 0, 0.54);
           }
         }
       }
+
       .btns {
         display: flex;
-        background: var(--accent);
-        align-items: center;
         justify-content: center;
-        color: var(--white);
+        align-items: center;
+        background: var(--accent);
+        color: white;
         padding: 5px;
         border-radius: 50px;
         transition: var(--trans);
+
         &:hover {
           background: #014741;
         }
       }
     }
   }
-
 }
 
 /* Tablet */
 @media only screen and (max-width: 1000px) {
   .property-main-card {
     width: calc(50% - 10px);
+
+    &.list {
+      width: 100%;
+    }
   }
 }
 
 /* Mobile */
-@media only screen and (max-width: 600px) {
-  .property-main-card {
+@media only screen and (max-width: 768px) {
+  .property-main-card,
+  .property-main-card.list {
     width: 100%;
+
+    .card {
+      flex-direction: column;
+      height: auto;
+
+      .top-card {
+        width: 100%;
+        height: 250px;
+      }
+
+      .bottom-card {
+        width: 100%;
+      }
+    }
   }
 }
-
