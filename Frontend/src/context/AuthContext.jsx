@@ -29,9 +29,9 @@ export const AuthProvider = ({ children }) => {
         const interceptor = axios.interceptors.response.use(
             (response) => response,
             (error) => {
-                if (error.response && 
-                    error.response.status === 403 && 
-                     error.response.data.message.includes('blocked')) {
+                if (error.response &&
+                    error.response.status === 403 &&
+                    error.response.data.message.includes('blocked')) {
                     logout();
                 }
                 return Promise.reject(error);

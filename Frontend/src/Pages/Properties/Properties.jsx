@@ -1,143 +1,287 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import API_URL from "../../Config";
 import "./Properties.scss";
-import PropertyCard from "../../components/PropertyCard/PropertyCard";
-import { MdSpaceDashboard } from "react-icons/md";
-import { IoMenu } from "react-icons/io5";
-import Sidebar from "../../components/PropertySidebar/Sidebar";
-import { FaFilter } from "react-icons/fa";
-import { IoClose } from "react-icons/io5";
 
-const dummyProperties = [
-    {
-        _id: 1,
-        title: "DLF Urban Grande Towers",
-        price: "₹1,65,00,000",
-        type: "FLAT",
-        views: 54,
-        address: "Sector 150, Noida",
-        beds: 4,
-        baths: 4,
-        area: 2400,
-    },
-    {
-        _id: 2,
-        title: "Godrej Heights",
-        price: "₹1,20,00,000",
-        type: "APARTMENT",
-        views: 31,
-        address: "Sector 137, Noida",
-        beds: 3,
-        baths: 3,
-        area: 1800,
-    },
-    {
-        _id: 3,
-        title: "Prestige Residency",
-        price: "₹95,00,000",
-        type: "FLAT",
-        views: 22,
-        address: "Greater Noida West",
-        beds: 2,
-        baths: 2,
-        area: 1400,
-    },
-];
+import PropertyCard from "../../components/PropertyCard/PropertyCard";
+import Sidebar from "../../components/PropertySidebar/Sidebar";
+
+import { MdSpaceDashboard } from "react-icons/md";
+import { IoMenu, IoClose } from "react-icons/io5";
+import { FaFilter } from "react-icons/fa";
 
 const Properties = () => {
-    // Grid/List View State
     const [activeView, setActiveView] = useState("grid");
-
-    // Mobile Sidebar State
     const [showSidebar, setShowSidebar] = useState(false);
+
+    const [properties, setProperties] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    const [filters, setFilters] = useState({
+        city: "",
+        propertyType: [],
+        bhk: "",
+        maxPrice: 100000000,
+        furnishing: [],
+        sort: "latest",
+    });
+
+    const fetchProperties = async (
+        currentFilters = filters
+    ) => {
+        try {
+            setLoading(true);
+
+            const params = new URLSearchParams();
+
+            if (currentFilters.city) {
+                params.append("city", currentFilters.city);
+            }
+
+            if (currentFilters.propertyType.length > 0) {
+                params.append(
+                    "propertyType",
+                    currentFilters.propertyType.join(",")
+                );
+            }
+
+            if (currentFilters.bhk) {
+                params.append("bhk", currentFilters.bhk);
+            }
+
+            if (currentFilters.maxPrice) {
+                params.append(
+                    "maxPrice",
+                    currentFilters.maxPrice
+                );
+            }
+
+            if (currentFilters.furnishing.length > 0) {
+                params.append(
+                    "furnishing",
+                    currentFilters.furnishing.join(",")
+                );
+            }
+
+            if (currentFilters.sort) {
+                params.append("sort", currentFilters.sort);
+            }
+
+            const res = await axios.get(
+                `${API_URL}/api/property?${params.toString()}`
+            );
+
+            setProperties(
+                res.data.properties || []
+            );
+        } catch (error) {
+            console.error(
+                "Error fetching properties:",
+                error
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Initial Load
+    useEffect(() => {
+        fetchProperties();
+    }, []);
+
+    // Real Time Filtering
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchProperties(filters);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [filters]);
+
+    const resetFilters = () => {
+        setFilters({
+            city: "",
+            propertyType: [],
+            bhk: "",
+            maxPrice: 100000000,
+            furnishing: [],
+            sort: "latest",
+        });
+    };
+
+    const handleSortChange = (e) => {
+        setFilters({
+            ...filters,
+            sort: e.target.value,
+        });
+    };
 
     return (
         <>
-            {/* Overlay for Mobile Sidebar */}
             {showSidebar && (
                 <div
                     className="sidebar-overlay"
-                    onClick={() => setShowSidebar(false)}
-                ></div>
+                    onClick={() =>
+                        setShowSidebar(false)
+                    }
+                />
             )}
 
             <div className="properties-parent parent">
                 <div className="properties-cont cont">
 
-                    {/* Left Sidebar */}
-                    <div className={`left-sidebar ${showSidebar ? "show" : ""}`}>
-
-                        {/* Close Button - Mobile Only */}
+                    {/* Sidebar */}
+                    <div
+                        className={`left-sidebar ${showSidebar
+                                ? "show"
+                                : ""
+                            }`}
+                    >
                         <div
                             className="close-sidebar"
-                            onClick={() => setShowSidebar(false)}
+                            onClick={() =>
+                                setShowSidebar(false)
+                            }
                         >
                             <IoClose />
                         </div>
 
-                        <Sidebar />
+                        <Sidebar
+                            filters={filters}
+                            setFilters={setFilters}
+                            resetFilters={resetFilters}
+                        />
                     </div>
 
-                    {/* Right Content */}
+                    {/* Right Side */}
                     <div className="right-side">
 
                         {/* Mobile Filter Button */}
                         <div
                             className="new-box-popup"
-                            onClick={() => setShowSidebar(true)}
+                            onClick={() =>
+                                setShowSidebar(true)
+                            }
                         >
                             <FaFilter />
-                            <span>Show Filters & Searches</span>
+                            <span>
+                                Show Filters &
+                                Searches
+                            </span>
                         </div>
 
                         {/* Top Toolbar */}
                         <div className="top-sidebar">
                             <p>
-                                Showing <span>{dummyProperties.length}</span> properties
+                                Showing{" "}
+                                <span>
+                                    {properties.length}
+                                </span>{" "}
+                                properties
                             </p>
 
                             <div className="last-box">
 
-                                {/* View Toggle */}
+                                {/* Grid View */}
                                 <div className="first">
                                     <div
-                                        className={`icon-box ${activeView === "grid" ? "active" : ""
+                                        className={`icon-box ${activeView ===
+                                                "grid"
+                                                ? "active"
+                                                : ""
                                             }`}
-                                        onClick={() => setActiveView("grid")}
+                                        onClick={() =>
+                                            setActiveView(
+                                                "grid"
+                                            )
+                                        }
                                     >
                                         <MdSpaceDashboard />
                                     </div>
 
+                                    {/* List View */}
                                     <div
-                                        className={`icon-box ${activeView === "list" ? "active" : ""
+                                        className={`icon-box ${activeView ===
+                                                "list"
+                                                ? "active"
+                                                : ""
                                             }`}
-                                        onClick={() => setActiveView("list")}
+                                        onClick={() =>
+                                            setActiveView(
+                                                "list"
+                                            )
+                                        }
                                     >
                                         <IoMenu />
                                     </div>
                                 </div>
 
-                                {/* Sort Dropdown */}
+                                {/* Sort */}
                                 <div className="second">
-                                    <label htmlFor="sort">Sort:</label>
-                                    <select id="sort">
-                                        <option value="latest">Latest</option>
-                                        <option value="lowToHigh">Price: Low To High</option>
-                                        <option value="highToLow">Price: High To Low</option>
+                                    <label>
+                                        Sort:
+                                    </label>
+
+                                    <select
+                                        value={
+                                            filters.sort
+                                        }
+                                        onChange={
+                                            handleSortChange
+                                        }
+                                    >
+                                        <option value="latest">
+                                            Latest
+                                        </option>
+
+                                        <option value="priceLow">
+                                            Price:
+                                            Low To High
+                                        </option>
+
+                                        <option value="priceHigh">
+                                            Price:
+                                            High To Low
+                                        </option>
                                     </select>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Property Cards */}
+                        {/* Properties */}
                         <div className="card-sections">
-                            {dummyProperties.map((property) => (
-                                <PropertyCard
-                                    key={property._id}
-                                    property={property}
-                                    view={activeView}
-                                />
-                            ))}
+                            {loading ? (
+                                <h3>
+                                    Loading
+                                    Properties...
+                                </h3>
+                            ) : properties.length >
+                                0 ? (
+                                properties.map(
+                                    (
+                                        property
+                                    ) => (
+                                        <PropertyCard
+                                            key={
+                                                property._id
+                                            }
+                                            property={
+                                                property
+                                            }
+                                            view={
+                                                activeView
+                                            }
+                                        />
+                                    )
+                                )
+                            ) : (
+                                <h3>
+                                    No Properties
+                                    Found
+                                </h3>
+                            )}
                         </div>
+
                     </div>
                 </div>
             </div>

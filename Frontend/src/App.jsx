@@ -10,18 +10,29 @@ import Properties from './Pages/Properties/Properties'
 import Login from './Pages/Login/Login'
 import Register from './Pages/Register/Register'
 import ForgotPassword from './Pages/Forgot-Password/ForgotPassword'
+import VerifyEmail from './Pages/Emailverify/VerifyEmail'
 
 const App = () => {
   return (
     <>
       <Navbar />
       <Routes>
-        <Route path='/login' element={<Login />} />
-        <Route path="/register" element={<Register />} />
         <Route path="/" element={<LandingPage />} />
+
         <Route path="/properties" element={<Properties />} />
-        <Route path="/property" element={<Property />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+
+        <Route path="/property/:id" element={<Property />} />
+
+        <Route path="/login" element={<Login />} />
+
+        <Route path="/register" element={<Register />} />
+
+        <Route path="/verifyemail" element={<VerifyEmail />} />
+
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword />}
+        />
       </Routes>
       <Footer />
     </>

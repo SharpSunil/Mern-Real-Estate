@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import "./register.scss";
+import { toast } from "react-toastify";
 import { useAuth } from "../../context/AuthContext";
+import "./register.scss";
 
 const Register = () => {
     const navigate = useNavigate();
@@ -14,206 +15,198 @@ const Register = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [role, setRole] = useState("buyer");
+    const [role, setRole] = useState("");
 
-    // UI States
+    // Loading State
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
-        setError("");
-        setSuccess("");
-        setLoading(true);
+    if (!role) {
+        toast.error("Please select your role");
+        return;
+    }
 
-        try {
-            const result = await register({
-                name,
-                email,
-                password,
-                role,
-            });
+    setLoading(true);
 
-            if (result.success) {
-                setSuccess(
-                    result.message ||
-                    "Registration successful! Redirecting to login..."
-                );
+    try {
+        const result = await register({
+            name,
+            email,
+            password,
+            role,
+        });
 
-                // Reset Form
-                setName("");
-                setEmail("");
-                setPassword("");
-                setRole("buyer");
+        if (result.success) {
+            // Store email for verification page
+            localStorage.setItem("verifyEmail", email);
 
-                setTimeout(() => {
-                    navigate("/login");
-                }, 1500);
-            } else {
-                setError(result.message);
-            }
-        } catch (err) {
-            setError(
-                "Something went wrong. Please try again."
+            toast.success(
+                result.message ||
+                "Registration successful! Please verify your email."
+            );
+
+            // Reset form
+            setName("");
+            setEmail("");
+            setPassword("");
+            setRole("");
+
+            // Redirect to verify email page
+            setTimeout(() => {
+                navigate("/verifyemail");
+            }, 1500);
+        } else {
+            toast.error(
+                result.message ||
+                "Registration failed. Please try again."
             );
         }
-
+    } catch (err) {
+        toast.error(
+            err.response?.data?.message ||
+            "Something went wrong. Please try again."
+        );
+    } finally {
         setLoading(false);
-    };
+    }
+};
 
     return (
-        <>
-            <div className="register-parent parent">
-                <div className="register-cont cont">
-                    <div className="form-box">
+        <div className="register-parent parent">
+            <div className="register-cont cont">
+                <div className="form-box">
 
-                        {/* Heading */}
-                        <div className="heading">
-                            Create Account
+                    <div className="heading">
+                        Create Account
+                    </div>
+
+                    <p>
+                        Join our community to find or list properties
+                    </p>
+
+                    <form onSubmit={handleSubmit}>
+
+                        {/* Full Name */}
+                        <label>Full Name</label>
+
+                        <input
+                            type="text"
+                            placeholder="Enter Your Full Name"
+                            value={name}
+                            onChange={(e) =>
+                                setName(e.target.value)
+                            }
+                            required
+                        />
+
+                        {/* Email */}
+                        <label>Email Address</label>
+
+                        <input
+                            type="email"
+                            placeholder="enteryouremail@gmail.com"
+                            value={email}
+                            onChange={(e) =>
+                                setEmail(e.target.value)
+                            }
+                            required
+                        />
+
+                        {/* Password */}
+                        <div className="second-box">
+                            <label>Password</label>
+
+                            <div className="password-box">
+                                <input
+                                    type={
+                                        showPassword
+                                            ? "text"
+                                            : "password"
+                                    }
+                                    placeholder="Enter Password"
+                                    value={password}
+                                    onChange={(e) =>
+                                        setPassword(
+                                            e.target.value
+                                        )
+                                    }
+                                    required
+                                />
+
+                                <span
+                                    className="eye-icon"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setShowPassword(
+                                            !showPassword
+                                        );
+                                    }}
+                                >
+                                    {showPassword ? (
+                                        <FaEyeSlash />
+                                    ) : (
+                                        <FaEye />
+                                    )}
+                                </span>
+                            </div>
                         </div>
 
+                        {/* Role Selection */}
+                        <div className="second-box">
+                            <label>Select Role</label>
+
+                            <div className="role-box">
+                                <div
+                                    className={`role-btn ${role === "buyer"
+                                        ? "active"
+                                        : ""
+                                        }`}
+                                    onClick={() =>
+                                        setRole("buyer")
+                                    }
+                                >
+                                    Buyer
+                                </div>
+
+                                <div
+                                    className={`role-btn ${role === "seller"
+                                        ? "active"
+                                        : ""
+                                        }`}
+                                    onClick={() =>
+                                        setRole("seller")
+                                    }
+                                >
+                                    Seller
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Submit Button */}
+                        <button
+                            className="btn"
+                            type="submit"
+                            disabled={loading}
+                        >
+                            {loading
+                                ? "Creating Account..."
+                                : "Create Account"}
+                        </button>
+
+                        {/* Login Link */}
                         <p>
-                            Join our community to find or list properties
+                            Already have an account?{" "}
+                            <Link to="/login">
+                                Sign In
+                            </Link>
                         </p>
 
-                        <form onSubmit={handleSubmit}>
-
-                            {/* Full Name */}
-                            <label>Full Name</label>
-
-                            <input
-                                type="text"
-                                placeholder="Enter Your Full Name"
-                                value={name}
-                                onChange={(e) =>
-                                    setName(e.target.value)
-                                }
-                                required
-                            />
-
-                            {/* Email */}
-                            <label>Email Address</label>
-
-                            <input
-                                type="email"
-                                placeholder="enteryouremail@gmail.com"
-                                value={email}
-                                onChange={(e) =>
-                                    setEmail(e.target.value)
-                                }
-                                required
-                            />
-
-                            {/* Password */}
-                            <div className="second-box">
-                                <label>Password</label>
-
-                                <div className="password-box">
-                                    <input
-                                        type={
-                                            showPassword
-                                                ? "text"
-                                                : "password"
-                                        }
-                                        placeholder=". . . . ."
-                                        value={password}
-                                        onChange={(e) =>
-                                            setPassword(
-                                                e.target.value
-                                            )
-                                        }
-                                        required
-                                    />
-
-                                    <span
-                                        className="eye-icon"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            setShowPassword(
-                                                !showPassword
-                                            );
-                                        }}
-                                    >
-                                        {showPassword ? (
-                                            <FaEyeSlash />
-                                        ) : (
-                                            <FaEye />
-                                        )}
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* Role Selection */}
-                            <div className="second-box">
-                                <label>Select Role</label>
-
-                                <div className="role-box">
-                                    <div
-                                        className={`role-btn ${role === "buyer"
-                                                ? "active"
-                                                : ""
-                                            }`}
-                                        onClick={() =>
-                                            setRole("buyer")
-                                        }
-                                    >
-                                        Buyer
-                                    </div>
-
-                                    <div
-                                        className={`role-btn ${role === "seller"
-                                                ? "active"
-                                                : ""
-                                            }`}
-                                        onClick={() =>
-                                            setRole("seller")
-                                        }
-                                    >
-                                        Seller
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Error Message */}
-                            {error && (
-                                <div className="error-message">
-                                    {error}
-                                </div>
-                            )}
-
-                            {/* Success Message */}
-                            {success && (
-                                <div className="success-message">
-                                    {success}
-                                </div>
-                            )}
-
-                            {/* Submit Button */}
-                            <button
-                                className="btn"
-                                type="submit"
-                                disabled={loading}
-                            >
-                                {loading
-                                    ? "Creating Account..."
-                                    : "Create Account"}
-                            </button>
-
-                            {/* Login Link */}
-                            <p>
-                                Already have an account?{" "}
-                                <Link to="/login">
-                                    Sign In
-                                </Link>
-                            </p>
-
-                        </form>
-                    </div>
+                    </form>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 

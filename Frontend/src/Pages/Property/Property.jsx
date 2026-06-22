@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs'
 import "./property.scss"
 import { FiMapPin } from "react-icons/fi";
@@ -9,8 +9,46 @@ import { GiFlatPlatform } from "react-icons/gi";
 import { IoHomeOutline } from "react-icons/io5";
 import { BiSolidMessageSquareDetail } from "react-icons/bi";
 import { FaArrowRightLong } from "react-icons/fa6";
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import API_URL from '../../Config';
+import axios from 'axios';
 const Property = () => {
+    const { id } = useParams();
+    const [property, setProperty] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+
+    useEffect(() => {
+        const fetchProperty = async () => {
+            try {
+                const res = await axios.get(
+                    `${API_URL}/api/property/${id}`
+                );
+
+                setProperty(res.data.property);
+
+                console.log(
+                    "Property:",
+                    res.data.property
+                );
+            } catch (err) {
+                console.log(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProperty();
+    }, [id]);
+
+    if (loading) {
+        return <h2>Loading Property...</h2>;
+    }
+
+    if (!property) {
+        return <h2>Property Not Found</h2>;
+    }
+
     return (
         <>
             <div className="property-parent parent">
@@ -27,77 +65,71 @@ const Property = () => {
                     <div className="image-grid">
                         <div
                             className="left-img"
-                            style={{ backgroundImage: `url(${image})` }}
+                            style={{
+                                backgroundImage: `url(${property.images?.[0] || image})`,
+                            }}
                         />
 
                         <div className="right-img-box">
                             <div
                                 className="right-img1"
-                                style={{ backgroundImage: `url(${image})` }}
+                                style={{
+                                    backgroundImage: `url(${property.images?.[1] || property.images?.[0] || image})`,
+                                }}
                             />
 
                             <div
                                 className="right-img2"
-                                style={{ backgroundImage: `url(${image})` }}
+                                style={{
+                                    backgroundImage: `url(${property.images?.[2] || property.images?.[0] || image})`,
+                                }}
                             />
                         </div>
                     </div>
+
+
                     <div className="first-new-box">
                         <div className="left-side-box">
-                            <div className="sec-indicator">PREMIUM LISTING</div>
-                            <div className="heading">Orchid Sunrize Heights </div>
-                            <div className="address"><FiMapPin /><span>Baner Road, Opp. Orchid School, Baner, 411045, Pune, India</span></div>
+                            <div className="sec-indicator">{property.status?.toUpperCase()}</div>
+                            <div className="heading">{property.title} </div>
+                            <div className="address"><FiMapPin /><span>{property.area}, {property.city}</span></div>
                             <div className="like"><FaRegHeart /></div>
                             <div className="main-card-box">
                                 <div className="card"><div className="icon"><IoHomeOutline /></div>
-                                    <div className="number">4</div>
-                                    <div className="desc">BEDROOMS</div>
+                                    <div className="number">{property.bhk}</div>
+                                    <div className="desc">BHK</div>
                                 </div>
                                 <div className="card"><div className="icon"><FaUsers /></div>
-                                    <div className="number">4</div>
-                                    <div className="desc">BEDROOMS</div>
+                                    <div className="number">{property.bathrooms}</div>
+                                    <div className="desc">Bathrooms</div>
                                 </div>
                                 <div className="card"><div className="icon"><FaCompress /></div>
-                                    <div className="number">4</div>
-                                    <div className="desc">BEDROOMS</div>
+                                    <div className="number">{property.areaSize}</div>
+                                    <div className="desc">SQ FT</div>
                                 </div>
                                 <div className="card"><div className="icon"><GiFlatPlatform /></div>
-                                    <div className="number">4</div>
-                                    <div className="desc">BEDROOMS</div>
+                                    <div className="number">{property.propertyType}</div>
+                                    <div className="desc">TYPE</div>
                                 </div>
 
                             </div>
                             <div className="new-desc-box">
                                 <h4>Description</h4>
-                                <p>Spacious high-rise close to IT hubs and metro connectivity. Offers well-planned layouts with premium flooring and wide windows. The society includes landscaped gardens and recreational areas, making it ideal for families.</p>
+                                <p>{property.description}</p>
                             </div>
                             <div className="amenities-box">
                                 <h4>Amenities</h4>
                                 <div className="amenities-list">
                                     <ul>
-                                        <li>
-                                            <div className="icon"><PiSealCheckFill /></div>Parking
-                                        </li>
-                                        <li>
-                                            <div className="icon"><PiSealCheckFill /></div>Parking
-                                        </li>
-                                        <li>
-                                            <div className="icon"><PiSealCheckFill /></div>Parking
-                                        </li>
-                                        <li>
-                                            <div className="icon"><PiSealCheckFill /></div>Parking
-                                        </li>
-                                        <li>
-                                            <div className="icon"><PiSealCheckFill /></div>Parking
-                                        </li>
-                                        <li>
-                                            <div className="icon"><PiSealCheckFill /></div>Parking
-                                        </li>
-                                        <li>
-                                            <div className="icon"><PiSealCheckFill /></div>Parking
-                                        </li>
-
-
+                                        {Array.isArray(property.amenities) &&
+                                            property.amenities.map((item, index) => (
+                                                <li key={index}>
+                                                    <div className="icon">
+                                                        <PiSealCheckFill />
+                                                    </div>
+                                                    {item}
+                                                </li>
+                                            ))}
                                     </ul>
 
                                 </div>
@@ -108,13 +140,19 @@ const Property = () => {
                         <div className="right-side-box">
                             <div className="first-box">
                                 <h5>LISTING PRICE</h5>
-                                <div className="price">₹1,12,00,000</div>
-                                <p>Available for Sale</p>
+                                <div className="price">₹{Number(property.price).toLocaleString("en-IN")}</div>
+                                <p>{property.status}</p>
                             </div>
                             <div className="second-box">
                                 <div className="top">
-                                    <div className="name">SS</div>
-                                    <div className="user">Sunil <span><PiSealCheckFill /> Verified Seller</span></div>
+
+                                    <div className="name">
+                                        {property.seller?.name
+                                            ? property.seller.name.substring(0, 2).toUpperCase()
+                                            : "NA"}
+                                    </div>
+
+                                    <div className="user">{property.seller?.name}<span><PiSealCheckFill /> Verified Seller</span></div>
                                 </div>
                                 <div className="middle">
                                     <div className="chat"><BiSolidMessageSquareDetail /><span>Chat</span></div>
@@ -135,13 +173,13 @@ const Property = () => {
                         <div className="heading">Property Details</div>
                         <div className="card">
                             <div className="idd">Property ID</div>
-                            <div className="added-on">674D4564D <span>Added On</span></div>
-                            <div className="date">04/15/2026</div>
+                            <div className="added-on">{property._id} <span>Added On</span></div>
+                            <div className="date">{property.createdAt ? new Date(property.createdAt).toLocaleDateString() : "-"}</div>
                         </div>
                         <div className="card">
                             <div className="idd">Property Type</div>
-                            <div className="added-on">Flat <span>Status</span></div>
-                            <div className="date">For Sale</div>
+                            <div className="added-on">{property.propertyType} <span>Status</span></div>
+                            <div className="date">{property.status}</div>
                         </div>
                     </div>
                     {/* //Last Listing section  */}
