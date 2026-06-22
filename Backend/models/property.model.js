@@ -65,7 +65,7 @@ const propertySchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
-    viewdBy: [{ type: String }],
+    viewedBy: [{ type: String }],
 },{
     timestamps: true
 }
