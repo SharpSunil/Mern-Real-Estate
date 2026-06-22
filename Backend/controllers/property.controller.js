@@ -1,6 +1,6 @@
 import Property from "../models/property.model.js";
 import Inquiry from "../models/inquiry.model.js";
-
+import jwt from "jsonwebtoken";
 
 
 //Add a Property
@@ -327,7 +327,10 @@ export const getPropertyDetails = async (req, res) => {
                 console.error("Error verifying JWT token: ", error);
             }
         }
-        const isSellerChecking = visitorId === property.seller._id.toString();
+        console.log("Property Seller:", property.seller);
+
+        const isSellerChecking =
+            property.seller?._id?.toString() === visitorId;
 
         //only increment the view if not seller but if he edit then increase the view 
         if (!isSellerChecking && !property.viewedBy.includes(visitorId)) {

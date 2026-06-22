@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { FaFilter } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
 import "./sidebar.scss";
@@ -30,13 +30,7 @@ const Sidebar = ({
             propertyType: updated,
         });
     };
-    useEffect(() => {
-        const delay = setTimeout(() => {
-            fetchProperties(filters);
-        }, 300);
 
-        return () => clearTimeout(delay);
-    }, [filters]);
 
     const handleFurnishing = (value) => {
         const exists = filters.furnishing.includes(value);
