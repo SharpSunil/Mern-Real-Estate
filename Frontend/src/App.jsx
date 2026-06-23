@@ -1,42 +1,19 @@
-import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route } from "react-router-dom";
+import MainLayout from "./Shared/Layout/MainLayout";
+import SharedRoutes from "./Shared/Routes/SharedRoutes";
+
 import "./App.scss"
 
-import LandingPage from './Pages/shared/LandingPage'
-import Navbar from './components/Header/Navbar'
-import Footer from './components/Footer/Footer'
-import Property from './Pages/Property/Property'
-import Properties from './Pages/Properties/Properties'
-import Login from './Pages/Login/Login'
-import Register from './Pages/Register/Register'
-import ForgotPassword from './Pages/Forgot-Password/ForgotPassword'
-import VerifyEmail from './Pages/Emailverify/VerifyEmail'
-
-const App = () => {
+function App() {
   return (
-    <>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
+    <Routes>
 
-        <Route path="/properties" element={<Properties />} />
+      <Route element={<MainLayout />}>
+        <Route path="/*" element={<SharedRoutes />} />
+      </Route>
 
-        <Route path="/property/:id" element={<Property />} />
-
-        <Route path="/login" element={<Login />} />
-
-        <Route path="/register" element={<Register />} />
-
-        <Route path="/verifyemail" element={<VerifyEmail />} />
-
-        <Route
-          path="/forgot-password"
-          element={<ForgotPassword />}
-        />
-      </Routes>
-      <Footer />
-    </>
-  )
+    </Routes>
+  );
 }
 
-export default App
+export default App;

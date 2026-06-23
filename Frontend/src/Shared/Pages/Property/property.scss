@@ -244,6 +244,17 @@
                 font-weight: 400;
                 color: var(--accent);
               }
+              .verified {
+                color: green;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+              }
+
+              .not-verified {
+                color: red;
+                font-weight: 400;
+              }
             }
           }
           .middle {
@@ -312,7 +323,7 @@
         padding: 10px 0;
         display: flex;
         justify-content: space-between;
-        flex-wrap:wrap;
+        flex-wrap: wrap;
         .idd {
           color: rgba(0, 0, 0, 0.407);
           font-size: 14px;
@@ -365,13 +376,13 @@
             color: rgba(0, 0, 0, 0.581);
           }
         }
-        .list-btn{
+        .list-btn {
           display: flex;
           gap: 10px;
           font-size: 14px;
           font-weight: 600;
           align-items: center;
-          color:black;
+          color: black;
           span {
             display: flex;
           }
@@ -379,41 +390,41 @@
       }
       .bottom {
         display: flex;
-        background: #F8FAFC;
+        background: #f8fafc;
         padding: 20px;
         align-items: center;
         justify-content: center;
         border-radius: 10px;
-        box-shadow:var(--shadow);
-        font-size:12px;
-        height:200px;
+        box-shadow: var(--shadow);
+        font-size: 12px;
+        height: 200px;
       }
     }
   }
 }
 
-@media only screen and (max-width:1000px){
-  .property-parent{
-    padding:40px 0px;
-    .property-cont{
-
-      .first-new-box{
+@media only screen and (max-width: 1000px) {
+  .property-parent {
+    padding: 40px 0px;
+    .property-cont {
+      .first-new-box {
         flex-direction: column;
-        .left-side-box{
-          width:100%;
-          .heading{
+        .left-side-box {
+          width: 100%;
+          .heading {
             font-size: 40px;
           }
-          .new-desc-box, .amenities-box{
-            h4{
+          .new-desc-box,
+          .amenities-box {
+            h4 {
               text-align: left;
             }
           }
         }
-        .right-side-box{
+        .right-side-box {
           width: 100%;
-          .first-box{
-            h5{
+          .first-box {
+            h5 {
               text-align: left;
             }
           }

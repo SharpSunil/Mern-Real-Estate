@@ -1,11 +1,11 @@
 .login-parent {
   background: #f8fafc;
-
+ height: 100dvh;
   .login-cont {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100dvh;
+   
     .form-box {
       max-width: 450px;
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import './featured.scss';
-import PropertyCard from '../../components/PropertyCard/PropertyCard';
+import PropertyCard from '../../../Components/PropertyCard/PropertyCard';
 import { Link } from 'react-router-dom';
 
 const dummyProperties = [

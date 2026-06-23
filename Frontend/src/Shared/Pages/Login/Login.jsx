@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import "./login.scss";
-import { useAuth } from "../../context/AuthContext";
+import "./Login.scss";
+import { useAuth } from "../../../Context/AuthContext";
 
 const Login = () => {
     const [email, setEmail] = useState("");

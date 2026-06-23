@@ -3,37 +3,38 @@
   box-shadow: var(--shadow);
   position: fixed;
   z-index: 999;
+  padding: 10px 0px;
   .navbar-cont-desktop {
     display: flex;
+
     height: 70px;
     justify-content: space-between;
     align-items: center;
- 
+
     // Logo and Icons Stylesheet
-   .logo {
-  a {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    text-decoration: none;
-    color: inherit;
-  }
+    .logo {
+      a {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+        color: inherit;
+      }
 
-  svg {
-    font-size: 35px;
-    color: var(--white);
-    background: var(--accent);
-    padding: 5px;
-    border-radius: 5px;
-  }
+      svg {
+        font-size: 35px;
+        color: var(--white);
+        background: var(--accent);
+        padding: 5px;
+        border-radius: 5px;
+      }
 
-  span {
-    font-size: 22px;
-    font-weight: 800;
-    color: #0d6e59;
-  }
-}
-
+      span {
+        font-size: 22px;
+        font-weight: 800;
+        color: #0d6e59;
+      }
+    }
 
     //Menu StyleSheet
     .nav-links {
@@ -69,7 +70,7 @@
     }
     .menu-icon {
       display: none;
-       cursor:pointer;
+      cursor: pointer;
       svg {
         color: var(--primary);
         font-size: 32px;
@@ -95,28 +96,28 @@
     padding: 20px;
     width: 70%;
     .mobile-logo {
-  a {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    text-decoration: none;
-    color: inherit;
-  }
+      a {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+        color: inherit;
+      }
 
-  svg {
-    font-size: 35px;
-    color: var(--white);
-    background: var(--accent);
-    padding: 5px;
-    border-radius: 5px;
-  }
+      svg {
+        font-size: 35px;
+        color: var(--white);
+        background: var(--accent);
+        padding: 5px;
+        border-radius: 5px;
+      }
 
-  span {
-    font-size: 22px;
-    font-weight: 800;
-    color: #0d6e59;
-  }
-}
+      span {
+        font-size: 22px;
+        font-weight: 800;
+        color: #0d6e59;
+      }
+    }
 
     .menu-list-mb {
       ul {
@@ -143,7 +144,7 @@
       position: absolute;
       right: 20px;
       top: 25px;
-      cursor:pointer;
+      cursor: pointer;
       svg {
         font-size: 30px;
       }

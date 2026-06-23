@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import API_URL from "../../Config";
+import API_URL from "../../../Config";
 import "./verifyemail.scss";
 
 const VerifyEmail = () => {

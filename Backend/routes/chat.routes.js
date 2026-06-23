@@ -54,41 +54,70 @@ chatRouter.post("/start", async (req, res) => {
 
 
 //to send message
+// ==========================
+// SEND MESSAGE
+// ==========================
 chatRouter.post("/send", async (req, res) => {
-    try {
+  try {
+    const { chatId, text, image } = req.body;
 
-        const { chatId, text, image } = req.body;
-        const userId = req.user._id;
+    // Current logged in user
+    const userId = req.user._id.toString();
 
-        const chat = await Chat.findById(chatId);
-        if (!chat)
-            return res.status(404).json({ success: false, message: "Chat not found" });
+    const chat = await Chat.findById(chatId);
 
-        //ensure the sender is part of the chat
-        if (chat.buyer.toString() !== userId && chat.seller.toString() !== userId) {
-            return res.status(403).json({ success: false, message: "Not authorized to send message in this chat" });
-        }
-
-        const newMessage = {
-            sender: userId,
-            text,
-            image,
-            createdAt: new Date(),
-        };
-        chat.messages.push(newMessage);
-        await chat.save();
-
-        const savedMessage = chat.messages[chat.messages.length - 1];
-        res.json({ chat, newMessage: savedMessage });
-
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Error sending message",
-            error: error.message
-        })
+    if (!chat) {
+      return res.status(404).json({
+        success: false,
+        message: "Chat not found",
+      });
     }
-})
+
+    console.log("Buyer :", chat.buyer.toString());
+    console.log("Seller:", chat.seller.toString());
+    console.log("User  :", userId);
+
+    // Verify user belongs to this chat
+    if (
+      chat.buyer.toString() !== userId &&
+      chat.seller.toString() !== userId
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to send message in this chat",
+      });
+    }
+
+    const newMessage = {
+      sender: req.user._id,
+      text,
+      image,
+      createdAt: new Date(),
+    };
+
+    chat.messages.push(newMessage);
+
+    await chat.save();
+
+    const savedMessage =
+      chat.messages[chat.messages.length - 1];
+
+    res.json({
+      success: true,
+      chat,
+      newMessage: savedMessage,
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Error sending message",
+      error: error.message,
+    });
+  }
+});
 
 // To get Chat for User
 chatRouter.get("/user", async (req, res) => {

@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs'
+import Breadcrumbs from '../../../Components/Breadcrumbs/Breadcrumbs'
 import "./property.scss"
 import { FiMapPin } from "react-icons/fi";
 import { FaCompress, FaRegHeart, FaUsers } from "react-icons/fa6";
-import image from "../../assets/realestate.jpg";
+import image from "../../../assets/realestate.jpg";
 import { PiSealCheckFill } from "react-icons/pi";
 import { GiFlatPlatform } from "react-icons/gi";
 import { IoHomeOutline } from "react-icons/io5";
 import { BiSolidMessageSquareDetail } from "react-icons/bi";
 import { FaArrowRightLong } from "react-icons/fa6";
-import { Link, useParams } from 'react-router-dom';
-import API_URL from '../../Config';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import API_URL from '../../../Config';
 import axios from 'axios';
 const Property = () => {
     const { id } = useParams();
     const [property, setProperty] = useState(null);
     const [loading, setLoading] = useState(true);
-
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProperty = async () => {
@@ -48,6 +48,41 @@ const Property = () => {
     if (!property) {
         return <h2>Property Not Found</h2>;
     }
+    const user = JSON.parse(localStorage.getItem("user"));
+    console.log(property.seller, "fdslkjklsdflkjsdfkljsdjkfl klsdfjklsdjf sdflkjklsdjf");
+
+    const handleStartChat = async () => {
+        try {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                navigate("/login");
+                return;
+            }
+
+            const res = await axios.post(
+                `${API_URL}/api/chat/start`,
+                {
+                    propertyId: property._id,
+                    sellerId: property.seller._id,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log("Chat Created:", res.data);
+
+            navigate(`/chat/${res.data._id}`);
+        } catch (error) {
+            console.error(
+                "Error starting chat:",
+                error.response?.data || error.message
+            );
+        }
+    };
 
     return (
         <>
@@ -152,15 +187,49 @@ const Property = () => {
                                             : "NA"}
                                     </div>
 
-                                    <div className="user">{property.seller?.name}<span><PiSealCheckFill /> Verified Seller</span></div>
+                                    <div className="user">
+                                        {property.seller?.name}
+
+                                        {property.seller?.isApproved ? (
+                                            <span className="verified">
+                                                <PiSealCheckFill /> Verified Seller
+                                            </span>
+                                        ) : (
+                                            <span className="not-verified">
+                                                Seller Not Verified
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="middle">
                                     <div className="chat"><BiSolidMessageSquareDetail /><span>Chat</span></div>
                                     <div className="inquire">Inquire</div>
                                 </div>
                                 <div className="last-box">
-                                    <p>Please login as a buyer to send inquiries.</p>
-                                    <div className="btn">Login</div>
+                                    {!user ? (
+                                        <>
+                                            <p>Please login as a buyer to send inquiries.</p>
+
+                                            <Link to="/login" className="btn">
+                                                Login
+                                            </Link>
+                                        </>
+                                    ) : user.role === "buyer" ? (
+                                        <>
+                                            <p>You can directly contact this seller.</p>
+
+                                            <div
+                                                className="btn"
+                                                onClick={handleStartChat}
+                                            >
+                                                Send Message
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p>Only buyers can contact sellers.</p>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>

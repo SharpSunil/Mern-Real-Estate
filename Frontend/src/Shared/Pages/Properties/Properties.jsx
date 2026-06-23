@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import API_URL from "../../Config";
+import API_URL from "../../../Config";
 import "./Properties.scss";
 
-import PropertyCard from "../../components/PropertyCard/PropertyCard";
-import Sidebar from "../../components/PropertySidebar/Sidebar";
+import PropertyCard from "../../../Components/PropertyCard/PropertyCard";
+import Sidebar from "../../../Components/PropertySidebar/Sidebar";
 
 import { MdSpaceDashboard } from "react-icons/md";
 import { IoMenu, IoClose } from "react-icons/io5";

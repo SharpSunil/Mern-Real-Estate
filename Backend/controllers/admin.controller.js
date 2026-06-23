@@ -143,7 +143,7 @@ export const getPendingSellers = async (req, res) => {
     try {
         const pendingSellers = await User.find({
             role: "seller",
-            isVerified: false
+            isApproved: false
         }).select("-password");
         res.json({
             success: true,
@@ -162,24 +162,27 @@ export const getPendingSellers = async (req, res) => {
 export const approveSeller = async (req, res) => {
     try {
         const seller = await User.findById(req.params.id);
+
         if (!seller || seller.role !== "seller") {
             return res.status(404).json({
                 success: false,
                 message: "Seller not found"
-            })
+            });
         }
-        seller.isVerified = true;
+
+        seller.isApproved = true;
+
         await seller.save();
+
         res.json({
             success: true,
             message: "Seller approved successfully",
             seller
-        })
-
+        });
 
     } catch (error) {
         res.status(500).json({
             message: error.message
-        })
+        });
     }
-}
+};

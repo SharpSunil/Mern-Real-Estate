@@ -1,18 +1,40 @@
 import Property from "../models/property.model.js";
 import Inquiry from "../models/inquiry.model.js";
 import jwt from "jsonwebtoken";
+import User from "../models/usermodel.js";
 
 
 //Add a Property
+
+
 export const addProperty = async (req, res) => {
     try {
+
+        const seller = await User.findById(req.user._id);
+
+        if (!seller) {
+            return res.status(404).json({
+                success: false,
+                message: "Seller not found"
+            });
+        }
+
+        if (!seller.isApproved) {
+            return res.status(403).json({
+                success: false,
+                message: "Your seller account is pending admin approval."
+            });
+        }
+
         let imageUrls = [];
+
         if (req.files && req.files.length > 0) {
             for (let file of req.files) {
                 const result = await uploadToCloudinary(file.buffer);
                 imageUrls.push(result.secure_url);
             }
         }
+
         const property = await Property.create({
             title: req.body.title,
             description: req.body.description,
@@ -27,33 +49,35 @@ export const addProperty = async (req, res) => {
             furnishing: req.body.furnishing,
             status: req.body.status,
             images: imageUrls,
-            seller: req.user._id, //as seller can only create the property
-            amenities: req.body.amenities ? Array.isArray(req.body.amenities) ? req.body.amenities : (() => {
-                try {
-                    return JSON.parse(req.body.amenities);
-                } catch (e) {
-                    return req.body.amenities.split(",");
-
-                }
-            })() : [],
-
+            seller: req.user._id,
+            amenities: req.body.amenities
+                ? Array.isArray(req.body.amenities)
+                    ? req.body.amenities
+                    : (() => {
+                        try {
+                            return JSON.parse(req.body.amenities);
+                        } catch {
+                            return req.body.amenities.split(",");
+                        }
+                    })()
+                : [],
         });
+
         res.json({
             success: true,
             property,
             message: "Property added successfully",
-        })
+        });
 
     } catch (error) {
-        console.error("Error adding property: ", error);
+        console.error("Error adding property:", error);
+
         res.status(500).json({
             success: false,
             message: error.message || "Internal server error while adding property",
-
-
-        })
+        });
     }
-}
+};
 
 //Get all properties
 export const getMyProperties = async (req, res) => {
@@ -307,7 +331,7 @@ export const getAllProperties = async (req, res) => {
 //to get a properties details
 export const getPropertyDetails = async (req, res) => {
     try {
-        const property = await Property.findById(req.params.id).populate("seller", "name email phone profilePic");
+        const property = await Property.findById(req.params.id).populate("seller", "name email phone profilePic isApproved isVerified");
         if (!property) {
             return res.status(404).json({
                 success: false,

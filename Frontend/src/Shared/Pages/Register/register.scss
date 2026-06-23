@@ -1,11 +1,11 @@
 .register-parent {
   background: #f8fafc;
-
+  height: 100dvh;
   .register-cont {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100dvh;
+  
     .form-box {
       max-width: 450px;
 
