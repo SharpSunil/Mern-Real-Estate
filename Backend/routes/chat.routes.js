@@ -7,61 +7,100 @@ const chatRouter = express.Router();
 
 chatRouter.use(protect);
 
-//to create a chat 
+
+// ==============================
+// START CHAT
+// ==============================
 chatRouter.post("/start", async (req, res) => {
     try {
-        const { propertyId, sellerId, buyerId: providedBuyerId } = req.body;
-        let buyerId, finalSellerId;
+        const {
+            propertyId,
+            sellerId,
+            buyerId: providedBuyerId,
+        } = req.body;
+
+        let buyerId;
+        let finalSellerId;
 
         if (req.user.role === "seller") {
-
             buyerId = providedBuyerId;
             finalSellerId = req.user._id;
         } else {
             buyerId = req.user._id;
             finalSellerId = sellerId;
         }
-        if (!buyerId || !finalSellerId) {
-            return res.status(400).json({ success: false, message: "Missing Buyer or Seller ID  " });
+
+        if (!buyerId || !finalSellerId || !propertyId) {
+            return res.status(400).json({
+                success: false,
+                message: "Buyer, Seller and Property are required.",
+            });
         }
 
-        //check for an existing chat between the buyer and seller
+        // One chat per Buyer + Seller + Property
         let chat = await Chat.findOne({
             buyer: buyerId,
             seller: finalSellerId,
+            property: propertyId,
         });
 
         if (!chat) {
-            // Create a new chat
             chat = await Chat.create({
-                property: propertyId,  //initail property context
+                property: propertyId,
                 buyer: buyerId,
                 seller: finalSellerId,
+
+                lastMessage: "",
+                unreadForBuyer: 0,
+                unreadForSeller: 0,
+
                 messages: [],
             });
         }
-        chat = await Chat.findById(chat._id).populate("buyer", "name email profilePic").populate("seller", "name email profilePic").populate("property", "title price images");
-        res.json(chat);
+
+        chat = await Chat.findById(chat._id)
+            .populate("buyer", "name email profilePic")
+            .populate("seller", "name email profilePic")
+            .populate("property", "title price images");
+
+        res.status(200).json(chat);
 
     } catch (error) {
+
+        console.error("Start Chat Error:", error);
+
         res.status(500).json({
-            success: false, message:
-                "Error Creating chat or getting previous one ",
-            error: error.message
+            success: false,
+            message: "Unable to start chat",
+            error: error.message,
         });
     }
 });
 
 
-//to send message
+
 // ==========================
 // SEND MESSAGE
 // ==========================
 chatRouter.post("/send", async (req, res) => {
     try {
+
         const { chatId, text, image } = req.body;
 
-        // Current logged in user
+        if (!chatId) {
+            return res.status(400).json({
+                success: false,
+                message: "Chat ID is required",
+            });
+        }
+
+        if (!text && !image) {
+            return res.status(400).json({
+                success: false,
+                message: "Message cannot be empty",
+            });
+        }
+
         const userId = req.user._id.toString();
 
         const chat = await Chat.findById(chatId);
@@ -73,10 +112,6 @@ chatRouter.post("/send", async (req, res) => {
             });
         }
 
-        console.log("Buyer :", chat.buyer.toString());
-        console.log("Seller:", chat.seller.toString());
-        console.log("User  :", userId);
-
         // Verify user belongs to this chat
         if (
             chat.buyer.toString() !== userId &&
@@ -84,32 +119,57 @@ chatRouter.post("/send", async (req, res) => {
         ) {
             return res.status(403).json({
                 success: false,
-                message: "Not authorized to send message in this chat",
+                message: "Not authorized",
             });
         }
 
         const newMessage = {
             sender: req.user._id,
-            text,
-            image,
-            createdAt: new Date(),
+            text: text || "",
+            image: image || "",
         };
 
+        // Save Message
         chat.messages.push(newMessage);
+
+        // Sidebar Preview
+        chat.lastMessage = text
+            ? text
+            : "📷 Image";
+
+        chat.lastMessageSender = req.user._id;
+
+        // Unread Counter
+        if (req.user.role === "buyer") {
+
+            chat.unreadForSeller += 1;
+
+        } else {
+
+            chat.unreadForBuyer += 1;
+        }
+
+        // updatedAt automatically updates because timestamps:true
 
         await chat.save();
 
-        const savedMessage =
-            chat.messages[chat.messages.length - 1];
+        // Return populated chat
+        const updatedChat = await Chat.findById(chat._id)
+            .populate("buyer", "name email profilePic")
+            .populate("seller", "name email profilePic")
+            .populate("property", "title price images")
+            .populate("messages.sender", "name profilePic")
+            .populate("lastMessageSender", "name");
 
-        res.json({
+        res.status(200).json({
             success: true,
-            chat,
-            newMessage: savedMessage,
+            message: "Message sent successfully",
+            chat: updatedChat,
         });
 
     } catch (error) {
-        console.log(error);
+
+        console.error("Send Message Error:", error);
 
         res.status(500).json({
             success: false,
@@ -119,102 +179,230 @@ chatRouter.post("/send", async (req, res) => {
     }
 });
 
-// To get Chat for User
+// ==========================
+// GET ALL CHATS OF LOGGED IN USER
+// ==========================
 chatRouter.get("/user", async (req, res) => {
     try {
+
         const userId = req.user._id;
+
         const chats = await Chat.find({
-            $or: [{ buyer: userId }, { seller: userId }]
+            $or: [
+                { buyer: userId },
+                { seller: userId }
+            ]
         })
 
             .populate("buyer", "name email profilePic")
+
             .populate("seller", "name email profilePic")
+
             .populate("property", "title price images")
-            .sort({ updatedAt: -1 }); //sort by most recent activity
-        res.json(chats);
+
+            .populate("lastMessageSender", "name")
+
+            .sort({
+                updatedAt: -1,
+            });
+
+        res.status(200).json({
+            success: true,
+            count: chats.length,
+            chats,
+        });
+
     } catch (error) {
+
+        console.error("User Chats Error:", error);
+
         res.status(500).json({
             success: false,
-            message: "Error fetching user chats",
-            error: error.message
-        })
+            message: "Error fetching chats",
+            error: error.message,
+        });
+
     }
-})
+});
 
-//to get chat messages
-
+// ==========================
+// GET SINGLE CHAT
+// ==========================
 chatRouter.get("/:chatId", async (req, res) => {
     try {
+
         const chat = await Chat.findById(req.params.chatId)
-            .populate("messages.sender", "name profilePic");
 
+            .populate("buyer", "name email profilePic")
 
-        if (!chat)
-            return res.status(404).json({ message: "Chat not found" });
-        //ensure the requester is part of the chat  
-        const userId = req.user._id.toString();
-        if (chat.buyer.toString() !== userId && chat.seller.toString() !== userId) {
-            return res.status(403).json({ message: "Not authorized " });
+            .populate("seller", "name email profilePic")
+
+            .populate("property", "title price images")
+
+            .populate("messages.sender", "name email profilePic")
+
+            .populate("lastMessageSender", "name");
+
+        if (!chat) {
+            return res.status(404).json({
+                success: false,
+                message: "Chat not found",
+            });
         }
 
-        res.json(chat);
-    } catch (error) {
-        res.status(500).json({
+        const userId = req.user._id.toString();
 
-            message: "Error fetching chat details",
-            error: error.message
-        })
+        // User must belong to this chat
+        if (
+            chat.buyer._id.toString() !== userId &&
+            chat.seller._id.toString() !== userId
+        ) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized.",
+            });
+        }
+
+        // Reset unread count
+        if (req.user.role === "seller") {
+
+            chat.unreadForSeller = 0;
+
+        } else {
+
+            chat.unreadForBuyer = 0;
+
+        }
+
+        await chat.save();
+
+        res.status(200).json({
+            success: true,
+            chat,
+        });
+
+    } catch (error) {
+
+        console.error("Fetch Chat Error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Error fetching chat",
+            error: error.message,
+        });
+
     }
-})
+});
 
 //to delete a entire chat (for admin or for user to delete their chat history)
+// ==========================
+// DELETE CHAT
+// ==========================
 chatRouter.delete("/:chatId", async (req, res) => {
     try {
+
         const chat = await Chat.findById(req.params.chatId);
-        if (!chat)
-            return res.status(404).json({ message: "Chat not found" });
-        //now we ensure the user is part of the chat 
-        if (chat.buyer.toString() !== req.user._id.toString() && chat.seller.toString() !== req.user._id.toString()) {
-            return res.status(403).json({ message: "Not authorized to delete this chat" });
 
+        if (!chat) {
+            return res.status(404).json({
+                success: false,
+                message: "Chat not found",
+            });
         }
-        await Chat.findByIdAndDelete(req.params.chatId);
-        res.json({ message: "Chat deleted successfully" });
 
-    }
-    catch (error) {
+        const userId = req.user._id.toString();
+
+        if (
+            chat.buyer.toString() !== userId &&
+            chat.seller.toString() !== userId
+        ) {
+            return res.status(403).json({
+                success: false,
+                message: "Not authorized",
+            });
+        }
+
+        await Chat.findByIdAndDelete(chat._id);
+
+        res.status(200).json({
+            success: true,
+            message: "Chat deleted successfully",
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
         res.status(500).json({
+            success: false,
             message: "Error deleting chat",
-            error: error.message
-        })
+            error: error.message,
+        });
     }
-})
+});
 
 //to delete a specific message
+// ==========================
+// DELETE MESSAGE
+// ==========================
 chatRouter.delete("/:chatId/message/:messageId", async (req, res) => {
+
     try {
+
         const chat = await Chat.findById(req.params.chatId);
 
-        if (!chat) return res.status(404).json({ message: "Chat not found" });
+        if (!chat) {
+            return res.status(404).json({
+                success: false,
+                message: "Chat not found",
+            });
+        }
 
         const message = chat.messages.id(req.params.messageId);
+
         if (!message) {
-            return res.status(404).json({ message: "Message not found" });
+            return res.status(404).json({
+                success: false,
+                message: "Message not found",
+            });
         }
-        //only the sender can delete this message
-        if (message.sender.toString() !== req.user._id.toString()) {
-            return res.status(403).json({ message: "Not authorized to delete this message" });
+
+        if (
+            message.sender.toString() !==
+            req.user._id.toString()
+        ) {
+            return res.status(403).json({
+                success: false,
+                message: "Not authorized",
+            });
         }
-        chat.messages.pull(req.params.messageId);
+
+        // Soft Delete
+        message.text = "This message was deleted.";
+
+        message.image = "";
+
+        message.isDeleted = true;
+
         await chat.save();
-        res.json({ message: "Message deleted successfully", chat });
-    }
-    catch (error) {
+
+        res.status(200).json({
+            success: true,
+            message: "Message deleted successfully",
+            chat,
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
         res.status(500).json({
+            success: false,
             message: "Error deleting message",
-            error: error.message
-        })
+            error: error.message,
+        });
     }
-})
+
+});
 
 export default chatRouter;

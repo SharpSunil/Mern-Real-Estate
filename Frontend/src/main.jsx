@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
-import { AuthProvider } from './Context/AuthContext.jsx';
+import { AuthProvider } from './context/AuthContext.jsx';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

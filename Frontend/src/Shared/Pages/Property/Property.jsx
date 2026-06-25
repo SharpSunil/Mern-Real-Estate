@@ -75,7 +75,7 @@ const Property = () => {
 
             console.log("Chat Created:", res.data);
 
-            navigate(`/chat/${res.data._id}`);
+            navigate(`/buyer/chat/${res.data._id}`);
         } catch (error) {
             console.error(
                 "Error starting chat:",

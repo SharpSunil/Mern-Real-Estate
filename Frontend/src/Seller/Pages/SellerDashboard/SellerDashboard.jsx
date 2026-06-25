@@ -22,6 +22,7 @@ const SellerDashboard = () => {
         <div className="seller-parent parent">
             <div className="seller-cont cont">
                 {/* Sidebar */}
+                
                 <div className="sidebar">
                     <div className="first">
                         <img

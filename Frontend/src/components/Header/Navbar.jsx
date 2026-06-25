@@ -4,7 +4,7 @@ import { FaHome } from "react-icons/fa";
 import { CgMenuRight } from "react-icons/cg";
 import { IoClose } from "react-icons/io5";
 import "./navbar.scss";
-import { useAuth } from "../../Context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);

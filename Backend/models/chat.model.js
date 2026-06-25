@@ -7,46 +7,78 @@ const messageSchema = new mongoose.Schema(
             ref: "User",
             required: true,
         },
+
         text: {
             type: String,
-            required: true,
-        },
-        image: {
-            type: String,
-            required: false,
-        },
-        createdAt: {
-            type: Date,
-            default: Date.now,
+            default: "",
         },
 
+        image: {
+            type: String,
+            default: "",
+        },
+
+        isSeen: {
+            type: Boolean,
+            default: false,
+        },
+
+        isDeleted: {
+            type: Boolean,
+            default: false,
+        },
+    },
+    {
+        timestamps: true,
     }
 );
 
-//chat Schema
 const chatSchema = new mongoose.Schema(
     {
         property: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Property",
-            required: false,
+            required: true,
         },
+
         buyer: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
         },
+
         seller: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
         },
+
+        // Sidebar Preview
+        lastMessage: {
+            type: String,
+            default: "",
+        },
+
+        lastMessageSender: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        },
+
+        unreadForBuyer: {
+            type: Number,
+            default: 0,
+        },
+
+        unreadForSeller: {
+            type: Number,
+            default: 0,
+        },
+
         messages: [messageSchema],
-    }, {
-    timestamps: true,
-}
+    },
+    {
+        timestamps: true,
+    }
 );
 
-const Chat = mongoose.model("Chat", chatSchema);
-
-export default Chat;
+export default mongoose.model("Chat", chatSchema);

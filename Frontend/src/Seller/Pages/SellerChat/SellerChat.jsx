@@ -3,19 +3,53 @@ import React, {
     useState,
     useRef,
 } from "react";
+
 import axios from "axios";
+
 import "./SellerChat.scss";
+
 import API_URL from "../../../Config";
+
 const SellerChat = () => {
-    const [chats, setChats] = useState([]);
-    const [selectedChat, setSelectedChat] = useState(null);
-    const [message, setMessage] = useState("");
+
+    const token = localStorage.getItem("token");
+
+    const user = JSON.parse(
+        localStorage.getItem("user")
+    );
+
     const [loading, setLoading] =
         useState(false);
-    const token = localStorage.getItem("token");
-    const messagesEndRef = useRef(null);
+
+    const [chats, setChats] =
+        useState([]);
+
+    const [filteredChats, setFilteredChats] =
+        useState([]);
+
+    const [selectedChat, setSelectedChat] =
+        useState(null);
+
+    const [message, setMessage] =
+        useState("");
+
+    const [search, setSearch] =
+        useState("");
+
+    const messagesEndRef =
+        useRef(null);
+
+    const firstLoad =
+        useRef(true);
+
+    //============================
+    // Fetch Chats
+    //============================
+
     const fetchChats = async () => {
+
         try {
+
             const res = await axios.get(
                 `${API_URL}/api/chat/user`,
                 {
@@ -25,22 +59,39 @@ const SellerChat = () => {
                 }
             );
 
-            setChats(res.data || []);
+            const list =
+                res.data.chats || [];
+
+            setChats(list);
+
+            setFilteredChats(list);
 
             if (
-                res.data.length > 0 &&
+                list.length > 0 &&
                 !selectedChat
             ) {
-                loadChat(res.data[0]._id);
+                loadChat(list[0]._id);
             }
+
         } catch (error) {
+
             console.log(error);
+
         }
+
     };
 
-    const loadChat = async (chatId) => {
+    //============================
+    // Load Chat
+    //============================
+
+    const loadChat = async (
+        chatId
+    ) => {
 
         try {
+
+            firstLoad.current = true;
 
             setLoading(true);
 
@@ -48,12 +99,15 @@ const SellerChat = () => {
                 `${API_URL}/api/chat/${chatId}`,
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,
+                        Authorization:
+                            `Bearer ${token}`,
                     },
                 }
             );
 
-            setSelectedChat(res.data);
+            setSelectedChat(
+                res.data.chat
+            );
 
         } catch (error) {
 
@@ -66,258 +120,507 @@ const SellerChat = () => {
         }
 
     };
+
+    //============================
+    // Search
+    //============================
+
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({
-            behavior: "smooth",
-        });
-    }, [selectedChat?.messages]);
 
-    const sendMessage = async () => {
-        if (!message.trim()) return;
+        const filtered =
+            chats.filter((chat) => {
 
-        try {
-            await axios.post(
-                `${API_URL}/api/chat/send`,
-                {
-                    chatId: selectedChat._id,
-                    text: message,
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
+                return (
+
+                    chat.buyer?.name
+                        ?.toLowerCase()
+                        .includes(
+                            search.toLowerCase()
+                        )
+
+                    ||
+
+                    chat.property?.title
+                        ?.toLowerCase()
+                        .includes(
+                            search.toLowerCase()
+                        )
+
+                );
+
+            });
+
+        setFilteredChats(
+            filtered
+        );
+
+    }, [search, chats]);
+
+    //============================
+    // Send Message
+    //============================
+
+    const sendMessage =
+        async () => {
+
+            if (!message.trim())
+                return;
+
+            try {
+
+                await axios.post(
+
+                    `${API_URL}/api/chat/send`,
+
+                    {
+                        chatId:
+                            selectedChat._id,
+
+                        text: message,
                     },
-                }
-            );
 
-            setMessage("");
+                    {
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`,
+                        },
+                    }
 
-            loadChat(selectedChat._id);
-        } catch (error) {
-            console.log(error);
-        }
-    };
+                );
+
+                setMessage("");
+
+                loadChat(
+                    selectedChat._id
+                );
+
+                fetchChats();
+
+            } catch (error) {
+
+                console.log(error);
+
+            }
+
+        };
+
+    //============================
+    // Auto Scroll
+    //============================
 
     useEffect(() => {
+
+        if (!selectedChat)
+            return;
+
+        if (
+            firstLoad.current
+        ) {
+
+            firstLoad.current =
+                false;
+
+            return;
+
+        }
+
+        messagesEndRef.current
+            ?.scrollIntoView({
+
+                behavior:
+                    "smooth",
+
+                block: "end",
+
+            });
+
+    }, [
+        selectedChat?.messages,
+    ]);
+
+    //============================
+    // Initial Fetch
+    //============================
+
+    useEffect(() => {
+
         fetchChats();
 
-        const interval = setInterval(() => {
-            fetchChats();
+        const interval =
+            setInterval(() => {
 
-            if (selectedChat?._id) {
-                loadChat(selectedChat._id);
-            }
-        }, 3000);
+                fetchChats();
 
-        return () => clearInterval(interval);
+                if (
+                    selectedChat?._id
+                ) {
+
+                    loadChat(
+                        selectedChat._id
+                    );
+
+                }
+
+            }, 3000);
+
+        return () =>
+            clearInterval(
+                interval
+            );
+
     }, [selectedChat?._id]);
-
     return (
+        <div className="seller-chat-parent parent">
+            <h2>Buyer Chats</h2>
+            <div className="seller-chat-cont cont">
 
-        <>
-            <h2 className="chat-title">Seller Messages</h2>
-
-            <div className="seller-chat-parent">
-
-                {/* ===========================
-          Sidebar
-      ============================ */}
+                {/* ================= Sidebar ================= */}
 
                 <div className="chat-sidebar">
 
                     <div className="sidebar-header">
-                        <h3>My Chats</h3>
+
+
 
                         <input
                             type="text"
-                            placeholder="Search Buyer..."
+                            placeholder="Search buyer or property..."
+                            value={search}
+                            onChange={(e) =>
+                                setSearch(e.target.value)
+                            }
                         />
+
                     </div>
 
-                    <div className="chat-list">
+                    <div className="chat-users">
 
-                        {chats.map((chat) => (
+                        {filteredChats.length === 0 ? (
 
-                            <div
-                                key={chat._id}
-                                className={`chat-user ${selectedChat?._id === chat._id
-                                    ? "active"
-                                    : ""
-                                    }`}
-                                onClick={() =>
-                                    loadChat(chat._id)
-                                }
-                            >
+                            <div className="empty-sidebar">
 
-                                <div className="avatar">
-
-                                    {chat.buyer?.name
-                                        ?.charAt(0)
-                                        ?.toUpperCase()}
-
-                                </div>
-
-                                <div className="user-details">
-
-                                    <h4>
-                                        {chat.buyer?.name}
-                                    </h4>
-
-                                    <p>
-                                        {chat.property?.title}
-                                    </p>
-
-                                </div>
+                                No Chats Found
 
                             </div>
 
-                        ))}
+                        ) : (
+
+                            filteredChats.map((chat) => {
+
+                                const unread =
+                                    chat.unreadForSeller;
+
+                                return (
+
+                                    <div
+                                        key={chat._id}
+                                        className={`chat-user ${selectedChat?._id ===
+                                            chat._id
+                                            ? "active"
+                                            : ""
+                                            }`}
+                                        onClick={() =>
+                                            loadChat(chat._id)
+                                        }
+                                    >
+
+                                        {/* Avatar */}
+
+                                        <div className="avatar">
+
+                                            {chat.buyer?.profilePic ? (
+
+                                                <img
+                                                    src={chat.buyer.profilePic}
+                                                    alt={chat.buyer?.name}
+                                                    className="buyer-profile"
+                                                />
+
+                                            ) : (
+
+                                                <span className="buyer-initial">
+                                                    {chat.buyer?.name
+                                                        ?.charAt(0)
+                                                        .toUpperCase()}
+                                                </span>
+
+                                            )}
+                                            <h4>{
+                                                chat.buyer
+                                                    ?.name
+                                            }</h4>
+
+
+
+
+                                        </div>
+
+                                        {/* Details */}
+
+                                        <div className="details">
+
+                                            <div className="topp">
+
+                                                <small>
+
+                                                    🏠{" "}
+                                                    {
+                                                        chat.property
+                                                            ?.title
+                                                    }
+
+                                                </small>
+                                                <span>
+
+                                                    {new Date(
+                                                        chat.updatedAt
+                                                    ).toLocaleDateString(
+                                                        "en-IN",
+                                                        {
+                                                            day: "2-digit",
+                                                            month: "short",
+                                                        }
+                                                    )}
+
+                                                </span>
+
+                                            </div>
+
+
+
+                                            <div className="bottom">
+
+                                                <p>
+
+                                                    {chat.lastMessage ||
+                                                        "No messages"}
+
+                                                </p>
+
+                                                {unread > 0 && (
+
+                                                    <div className="badge">
+
+                                                        {
+                                                            unread
+                                                        }
+
+                                                    </div>
+
+                                                )}
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                );
+
+                            })
+
+                        )}
 
                     </div>
 
                 </div>
 
-                {/* ===========================
-            Chat Window
-      ============================ */}
+                {/* ================= Chat Window ================= */}
 
                 <div className="chat-window">
 
-                    {selectedChat ? (
+                    {!selectedChat ? (
+
+                        <div className="no-chat-selected">
+
+                            <h2>Select a conversation</h2>
+
+                            <p>
+                                Select any buyer from the left to start chatting.
+                            </p>
+
+                        </div>
+
+                    ) : (
 
                         <>
 
-                            {/* ===========================
-                  Header
-            ============================ */}
+                            {/* ================= Header ================= */}
 
                             <div className="chat-header">
 
-                                <div className="header-user">
-                                    <div className="avatar large">
-                                        {selectedChat?.buyer?.name?.charAt(0).toUpperCase()}
+                                <div className="left">
+
+                                    <div className="avatar">
+
+                                        {selectedChat.buyer?.profilePic ? (
+
+                                            <img
+                                                src={selectedChat.buyer.profilePic}
+                                                alt=""
+                                            />
+
+                                        ) : (
+
+                                            selectedChat.buyer?.name
+                                                ?.charAt(0)
+                                                .toUpperCase()
+
+                                        )}
+
                                     </div>
 
-                                    <div className="user-info">
-                                        <h3>{selectedChat?.buyer?.name}</h3>
+                                    <div>
 
-                                        <p>
-                                            Interested in{" "}
-                                            <strong>{selectedChat?.property?.title}</strong>
-                                        </p>
+                                        <h3>
+
+                                            {selectedChat.buyer?.name}
+
+                                        </h3>
+
+                                        <small>
+
+                                            🏠 {selectedChat.property?.title}
+
+                                        </small>
+
                                     </div>
+
                                 </div>
 
                             </div>
 
-                            <div className="chat-body">
+                            {/* ================= Messages ================= */}
 
-                                {loading ? (
+                            <div className="messages">
 
-                                    <div className="loading-chat">
-                                        Loading Messages...
+                                {selectedChat.messages.length === 0 ? (
+
+                                    <div className="empty-message">
+
+                                        Start your conversation.
+
                                     </div>
 
                                 ) : (
 
-                                    <>
+                                    selectedChat.messages.map((msg) => {
 
-                                        {selectedChat.messages?.length === 0 ? (
+                                        const senderId =
+                                            typeof msg.sender === "object"
+                                                ? msg.sender._id
+                                                : msg.sender;
 
-                                            <div className="empty-message">
+                                        const isMe =
+                                            senderId.toString() ===
+                                            user._id.toString();
 
-                                                No Messages Yet
+                                        return (
+
+                                            <div
+                                                key={msg._id}
+                                                className={`message-row ${isMe ? "me" : "other"
+                                                    }`}
+                                            >
+
+                                                <div className="message-box">
+
+                                                    {msg.isDeleted ? (
+
+                                                        <i>
+
+                                                            This message was deleted
+
+                                                        </i>
+
+                                                    ) : (
+
+                                                        <>
+
+                                                            {msg.image && (
+
+                                                                <img
+                                                                    src={msg.image}
+                                                                    alt=""
+                                                                />
+
+                                                            )}
+
+                                                            {msg.text && (
+
+                                                                <p>
+
+                                                                    {msg.text}
+
+                                                                </p>
+
+                                                            )}
+
+                                                        </>
+
+                                                    )}
+
+                                                    <span>
+
+                                                        {new Date(
+                                                            msg.createdAt
+                                                        ).toLocaleTimeString(
+                                                            [],
+                                                            {
+                                                                hour: "2-digit",
+                                                                minute: "2-digit",
+                                                            }
+                                                        )}
+
+                                                    </span>
+
+                                                </div>
 
                                             </div>
 
-                                        ) : (
+                                        );
 
-                                            selectedChat.messages?.map((msg) => {
-
-                                                const user = JSON.parse(localStorage.getItem("user"));
-
-                                                const isMe =
-                                                    (msg.sender?._id || msg.sender) === user._id;
-
-                                                return (
-
-                                                    <div
-                                                        key={msg._id}
-                                                        className={`message-row ${isMe ? "right" : "left"
-                                                            }`}
-                                                    >
-                                                        <div
-                                                            className={`message ${isMe ? "sender" : "receiver"
-                                                                }`}
-                                                        >
-                                                            <p>{msg.text}</p>
-
-                                                            <small>
-                                                                {new Date(msg.createdAt).toLocaleTimeString([], {
-                                                                    hour: "2-digit",
-                                                                    minute: "2-digit",
-                                                                })}
-                                                            </small>
-                                                        </div>
-                                                    </div>
-
-                                                );
-
-                                            })
-
-                                        )}
-
-                                        <div ref={messagesEndRef}></div>
-
-                                    </>
+                                    })
 
                                 )}
 
+                                <div ref={messagesEndRef}></div>
+
                             </div>
+
+                            {/* ================= Footer ================= */}
 
                             <div className="chat-footer">
 
                                 <input
                                     type="text"
                                     placeholder="Type your message..."
-
                                     value={message}
-
                                     onChange={(e) =>
                                         setMessage(e.target.value)
                                     }
-
                                     onKeyDown={(e) => {
-                                        if (e.key === "Enter") {
-                                            sendMessage();
-                                        }
-                                    }}
 
+                                        if (e.key === "Enter") {
+
+                                            sendMessage();
+
+                                        }
+
+                                    }}
                                 />
 
                                 <button
-                                    className="send-btn"
                                     onClick={sendMessage}
                                 >
+
                                     Send
+
                                 </button>
 
                             </div>
 
                         </>
-
-                    ) : (
-
-                        <div className="empty-chat">
-
-                            <h2>
-                                No Conversation Selected
-                            </h2>
-
-                            <p>
-                                Please select a buyer from the left.
-                            </p>
-
-                        </div>
 
                     )}
 
@@ -325,9 +628,8 @@ const SellerChat = () => {
 
             </div>
 
-        </>
+        </div>
     );
+}
 
-};
-
-export default SellerChat;
+export default SellerChat

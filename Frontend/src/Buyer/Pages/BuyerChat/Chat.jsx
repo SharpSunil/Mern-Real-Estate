@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, {
+    useEffect,
+    useState,
+    useRef,
+} from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import API_URL from "../../../Config";
@@ -12,9 +16,12 @@ const Chat = () => {
 
     const user = JSON.parse(localStorage.getItem("user"));
     const token = localStorage.getItem("token");
+    const messagesEndRef = useRef(null);
 
+    const firstLoad = useRef(true);
     const fetchChat = async () => {
         try {
+
             const res = await axios.get(
                 `${API_URL}/api/chat/${chatId}`,
                 {
@@ -24,25 +31,50 @@ const Chat = () => {
                 }
             );
 
-            console.log("Chat Data:", res.data);
+            setChat(res.data.chat);
 
-            setChat(res.data);
         } catch (error) {
-            console.log("Fetch Chat Error:", error);
+
+            console.log(error);
+
         } finally {
+
             setLoading(false);
+
         }
     };
 
     useEffect(() => {
+
         fetchChat();
 
         const interval = setInterval(() => {
+
             fetchChat();
+
         }, 3000);
 
         return () => clearInterval(interval);
+
     }, [chatId]);
+
+    useEffect(() => {
+
+        if (!chat) return;
+
+        if (firstLoad.current) {
+
+            firstLoad.current = false;
+
+            return;
+
+        }
+
+        messagesEndRef.current?.scrollIntoView({
+            behavior: "smooth",
+        });
+
+    }, [chat?.messages]);
 
     const sendMessage = async () => {
         if (!message.trim()) return;
@@ -62,9 +94,8 @@ const Chat = () => {
             );
 
             setChat(res.data.chat);
-            setMessage("");
 
-            fetchChat();
+            setMessage("");
         } catch (error) {
             console.log("Send Message Error:", error);
         }
@@ -109,7 +140,11 @@ const Chat = () => {
                 </h2>
 
                 <p>
-                    Property : {chat?.property?.title || "Property"}
+                    🏠 {chat?.property?.title}
+
+                    <br />
+
+                    ₹{chat?.property?.price?.toLocaleString("en-IN")}
                 </p>
             </div>
 
@@ -122,7 +157,9 @@ const Chat = () => {
                     background: "#f8fafc",
                 }}
             >
-                {chat?.messages?.length > 0 ? (
+               
+                {chat?.messages?.length ? (
+                    
                     chat.messages.map((msg) => {
                         const senderId =
                             typeof msg.sender === "object"
@@ -159,13 +196,43 @@ const Chat = () => {
                                             "0 2px 10px rgba(0,0,0,0.08)",
                                     }}
                                 >
-                                    <p
+                                    <div
                                         style={{
-                                            margin: "0 0 5px 0",
+                                            marginBottom: "5px",
                                         }}
                                     >
-                                        {msg.text}
-                                    </p>
+                                        {msg.isDeleted ? (
+
+                                            <i>This message was deleted</i>
+
+                                        ) : (
+
+                                            <>
+                                                {msg.image && (
+                                                    <img
+                                                        src={msg.image}
+                                                        alt=""
+                                                        style={{
+                                                            width: "220px",
+                                                            borderRadius: "8px",
+                                                            marginBottom: "10px",
+                                                        }}
+                                                    />
+                                                )}
+
+                                                {msg.text && (
+                                                    <p
+                                                        style={{
+                                                            margin: 0,
+                                                        }}
+                                                    >
+                                                        {msg.text}
+                                                    </p>
+                                                )}
+                                            </>
+
+                                        )}
+                                    </div>
 
                                     <small
                                         style={{
@@ -174,8 +241,8 @@ const Chat = () => {
                                     >
                                         {msg.createdAt
                                             ? new Date(
-                                                  msg.createdAt
-                                              ).toLocaleString()
+                                                msg.createdAt
+                                            ).toLocaleString()
                                             : ""}
                                     </small>
                                 </div>
@@ -193,6 +260,8 @@ const Chat = () => {
                         <p>Start conversation.</p>
                     </div>
                 )}
+
+                 <div ref={messagesEndRef}></div>
             </div>
 
             {/* Input */}

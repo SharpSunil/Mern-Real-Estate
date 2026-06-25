@@ -6,53 +6,108 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 //Register user 
 
+// Register User
 export const register = async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
 
-        // Check if user already exists
+        // ==========================
+        // Validate Required Fields
+        // ==========================
+        if (!name || !email || !password || !role) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required.",
+            });
+        }
+
+        // ==========================
+        // Check Existing User
+        // ==========================
         const userExists = await User.findOne({ email });
 
         if (userExists) {
             return res.status(400).json({
                 success: false,
-                message: "User already exists",
+                message: "User already exists.",
             });
         }
 
-        // Hash password
+        // ==========================
+        // Hash Password
+        // ==========================
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Generate verification token
+        // ==========================
+        // Generate OTP
+        // ==========================
         const verificationToken = Math.floor(
             100000 + Math.random() * 900000
         ).toString();
 
-        // Create user
+        // ==========================
+        // Create User
+        // ==========================
         const user = await User.create({
             name,
             email,
             password: hashedPassword,
             role,
-            isApproved: role === "seller" ? false : true,
             verificationToken,
+            isApproved: role === "seller" ? false : true,
         });
 
-        // Send email
-        await sendEmail({
-            email,
-            subject: "Welcome to Real Estate Platform - Verify Your Email",
-            message: `
-        <h1>Welcome to Real Estate Platform, ${name}!</h1>
-        <p>Your verification code:</p>
-        <h2>${verificationToken}</h2>
-      `,
-        });
+        console.log("✅ User Created:", user.email);
 
-        res.status(201).json({
+        // ==========================
+        // Send Verification Email
+        // ==========================
+        try {
+
+            await sendEmail({
+                email,
+                subject: "Welcome to Real Estate Platform - Verify Your Email",
+                message: `
+                    <h2>Welcome ${name}</h2>
+
+                    <p>Thank you for registering.</p>
+
+                    <p>Your verification code is:</p>
+
+                    <h1 style="color:#0d9488">${verificationToken}</h1>
+
+                    <p>This OTP is valid for email verification only.</p>
+                `,
+            });
+
+            console.log("✅ Verification Email Sent");
+
+        } catch (emailError) {
+
+            console.error("❌ Email Sending Failed:", emailError.message);
+
+            // Delete created user
+            await User.findByIdAndDelete(user._id);
+
+            console.log("🗑 User Deleted Because Email Failed");
+
+            return res.status(500).json({
+                success: false,
+                message:
+                    "Unable to send verification email. Registration cancelled. Please try again.",
+            });
+        }
+
+        // ==========================
+        // Success
+        // ==========================
+        return res.status(201).json({
             success: true,
-            message: "User registered successfully. Please verify your email.",
+            message:
+                "Registration successful. Please verify your email.",
+
             user: {
+                _id: user._id,
                 name: user.name,
                 email: user.email,
                 role: user.role,
@@ -60,16 +115,16 @@ export const register = async (req, res) => {
         });
 
     } catch (error) {
-        console.error(error);
 
-        res.status(500).json({
+        console.error("Register Error:", error);
+
+        return res.status(500).json({
             success: false,
-            message: "Registration Was Not Successful",
+            message: "Registration failed.",
             error: error.message,
         });
     }
 };
-
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
