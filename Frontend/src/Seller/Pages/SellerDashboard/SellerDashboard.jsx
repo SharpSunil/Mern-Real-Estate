@@ -8,13 +8,10 @@ import { IoLogOutOutline } from "react-icons/io5";
 import { IoMdChatboxes } from "react-icons/io";
 import { SiInquirer } from "react-icons/si";
 import { CgProfile } from "react-icons/cg";
-import { Table, Tag, Button } from "antd";
-import {
-    EditOutlined,
-    DeleteOutlined,
-    EyeOutlined,
-} from "@ant-design/icons";
 
+import DashboardContent from "../DashboardContent/Dashboardcontet";
+import MyProperties from "../MyProperties/MyProperties";
+import AddProperty from "../AddProperty/AddProperty";
 const SellerDashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
 
@@ -95,7 +92,7 @@ const SellerDashboard = () => {
 
                 {/* Content */}
                 <div className="right-side">
-                    {/* {activeTab === "dashboard" && <DashboardContent />} */}
+                    {activeTab === "dashboard" && <DashboardContent />}
                     {activeTab === "properties" && <MyProperties />}
                     {activeTab === "add" && <AddProperty />}
                     {activeTab === "chat" && <SellerChat />}
