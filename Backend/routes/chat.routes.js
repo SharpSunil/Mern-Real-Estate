@@ -58,65 +58,65 @@ chatRouter.post("/start", async (req, res) => {
 // SEND MESSAGE
 // ==========================
 chatRouter.post("/send", async (req, res) => {
-  try {
-    const { chatId, text, image } = req.body;
+    try {
+        const { chatId, text, image } = req.body;
 
-    // Current logged in user
-    const userId = req.user._id.toString();
+        // Current logged in user
+        const userId = req.user._id.toString();
 
-    const chat = await Chat.findById(chatId);
+        const chat = await Chat.findById(chatId);
 
-    if (!chat) {
-      return res.status(404).json({
-        success: false,
-        message: "Chat not found",
-      });
+        if (!chat) {
+            return res.status(404).json({
+                success: false,
+                message: "Chat not found",
+            });
+        }
+
+        console.log("Buyer :", chat.buyer.toString());
+        console.log("Seller:", chat.seller.toString());
+        console.log("User  :", userId);
+
+        // Verify user belongs to this chat
+        if (
+            chat.buyer.toString() !== userId &&
+            chat.seller.toString() !== userId
+        ) {
+            return res.status(403).json({
+                success: false,
+                message: "Not authorized to send message in this chat",
+            });
+        }
+
+        const newMessage = {
+            sender: req.user._id,
+            text,
+            image,
+            createdAt: new Date(),
+        };
+
+        chat.messages.push(newMessage);
+
+        await chat.save();
+
+        const savedMessage =
+            chat.messages[chat.messages.length - 1];
+
+        res.json({
+            success: true,
+            chat,
+            newMessage: savedMessage,
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Error sending message",
+            error: error.message,
+        });
     }
-
-    console.log("Buyer :", chat.buyer.toString());
-    console.log("Seller:", chat.seller.toString());
-    console.log("User  :", userId);
-
-    // Verify user belongs to this chat
-    if (
-      chat.buyer.toString() !== userId &&
-      chat.seller.toString() !== userId
-    ) {
-      return res.status(403).json({
-        success: false,
-        message: "Not authorized to send message in this chat",
-      });
-    }
-
-    const newMessage = {
-      sender: req.user._id,
-      text,
-      image,
-      createdAt: new Date(),
-    };
-
-    chat.messages.push(newMessage);
-
-    await chat.save();
-
-    const savedMessage =
-      chat.messages[chat.messages.length - 1];
-
-    res.json({
-      success: true,
-      chat,
-      newMessage: savedMessage,
-    });
-
-  } catch (error) {
-    console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Error sending message",
-      error: error.message,
-    });
-  }
 });
 
 // To get Chat for User
@@ -146,7 +146,7 @@ chatRouter.get("/user", async (req, res) => {
 chatRouter.get("/:chatId", async (req, res) => {
     try {
         const chat = await Chat.findById(req.params.chatId)
-            .populate("message.sender", "name profilePic");
+            .populate("messages.sender", "name profilePic");
 
 
         if (!chat)

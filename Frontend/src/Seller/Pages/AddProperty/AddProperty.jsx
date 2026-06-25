@@ -1,5 +1,5 @@
 import React from "react";
-import'./addproperty.scss'
+import './addproperty.scss'
 import {
   Form,
   Input,
@@ -62,31 +62,31 @@ const AddProperty = () => {
                   label="Property Type"
                   name="propertyType"
                 >
-                 <Select
-  options={[
-    { label: "Flat", value: "flat" },
-    { label: "Apartment", value: "apartment" },
-    { label: "Villa", value: "villa" },
-    { label: "House", value: "house" },
-    { label: "Studio", value: "studio" },
-    { label: "Penthouse", value: "penthouse" },
-    { label: "Bungalow", value: "bungalow" },
-    { label: "Duplex", value: "duplex" },
-    { label: "Loft", value: "loft" },
-    { label: "Cottage", value: "cottage" },
-    { label: "Farmhouse", value: "farmhouse" },
-    { label: "Townhouse", value: "townhouse" },
-    { label: "Condo", value: "condo" },
-    { label: "Land", value: "land" },
-    { label: "Commercial", value: "commercial" },
-    { label: "Industrial", value: "industrial" },
-    { label: "Mixed Use", value: "mixed-use" },
-    { label: "Office", value: "office" },
-    { label: "Shop", value: "shop" },
-    { label: "Warehouse", value: "warehouse" },
-    { label: "Other", value: "other" },
-  ]}
-/>
+                  <Select
+                    options={[
+                      { label: "Flat", value: "flat" },
+                      { label: "Apartment", value: "apartment" },
+                      { label: "Villa", value: "villa" },
+                      { label: "House", value: "house" },
+                      { label: "Studio", value: "studio" },
+                      { label: "Penthouse", value: "penthouse" },
+                      { label: "Bungalow", value: "bungalow" },
+                      { label: "Duplex", value: "duplex" },
+                      { label: "Loft", value: "loft" },
+                      { label: "Cottage", value: "cottage" },
+                      { label: "Farmhouse", value: "farmhouse" },
+                      { label: "Townhouse", value: "townhouse" },
+                      { label: "Condo", value: "condo" },
+                      { label: "Land", value: "land" },
+                      { label: "Commercial", value: "commercial" },
+                      { label: "Industrial", value: "industrial" },
+                      { label: "Mixed Use", value: "mixed-use" },
+                      { label: "Office", value: "office" },
+                      { label: "Shop", value: "shop" },
+                      { label: "Warehouse", value: "warehouse" },
+                      { label: "Other", value: "other" },
+                    ]}
+                  />
                 </Form.Item>
               </Col>
 

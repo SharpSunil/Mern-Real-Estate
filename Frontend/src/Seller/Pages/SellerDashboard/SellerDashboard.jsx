@@ -12,6 +12,7 @@ import { CgProfile } from "react-icons/cg";
 import DashboardContent from "../DashboardContent/Dashboardcontet";
 import MyProperties from "../MyProperties/MyProperties";
 import AddProperty from "../AddProperty/AddProperty";
+import SellerChat from "../SellerChat/SellerChat";
 const SellerDashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
 
