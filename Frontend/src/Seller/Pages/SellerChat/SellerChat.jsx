@@ -3,6 +3,9 @@ import React, {
     useState,
     useRef,
 } from "react";
+import {
+    useParams,
+} from "react-router-dom";
 
 import axios from "axios";
 
@@ -17,6 +20,7 @@ const SellerChat = () => {
     const user = JSON.parse(
         localStorage.getItem("user")
     );
+    const { chatId } = useParams();
 
     const [loading, setLoading] =
         useState(false);
@@ -68,7 +72,8 @@ const SellerChat = () => {
 
             if (
                 list.length > 0 &&
-                !selectedChat
+                !selectedChat && 
+                !chatId
             ) {
                 loadChat(list[0]._id);
             }
@@ -242,33 +247,35 @@ const SellerChat = () => {
     // Initial Fetch
     //============================
 
-    useEffect(() => {
+   useEffect(() => {
+
+    fetchChats();
+
+    if (chatId) {
+
+        loadChat(chatId);
+
+    }
+
+    const interval = setInterval(() => {
 
         fetchChats();
 
-        const interval =
-            setInterval(() => {
+        if (chatId) {
 
-                fetchChats();
+            loadChat(chatId);
 
-                if (
-                    selectedChat?._id
-                ) {
+        } else if (selectedChat?._id) {
 
-                    loadChat(
-                        selectedChat._id
-                    );
+            loadChat(selectedChat._id);
 
-                }
+        }
 
-            }, 3000);
+    }, 3000);
 
-        return () =>
-            clearInterval(
-                interval
-            );
+    return () => clearInterval(interval);
 
-    }, [selectedChat?._id]);
+}, [chatId, selectedChat?._id]);
     return (
         <div className="seller-chat-parent parent">
             <h2>Buyer Chats</h2>

@@ -1,0 +1,281 @@
+.inquiry-parent {
+    width: 100%;
+    padding: 30px 0;
+    background: #f8fafc;
+    min-height: 100vh;
+
+    .inquiry-cont {
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+
+            h2 {
+                font-size: 28px;
+                font-weight: 700;
+                color: var(--primary);
+            }
+
+            input {
+                width: 350px;
+                height: 48px;
+                padding: 0 18px;
+                border: 1px solid #ddd;
+                border-radius: 10px;
+                outline: none;
+                transition: .3s;
+
+                &:focus {
+                    border-color: var(--accent);
+                }
+            }
+        }
+
+        .loading,
+        .empty-inquiry {
+            background: #fff;
+            border-radius: 12px;
+            padding: 80px 30px;
+            text-align: center;
+
+            h3 {
+                color: var(--primary);
+                margin-bottom: 10px;
+            }
+
+            p {
+                color: #666;
+            }
+        }
+
+        .inquiry-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .inquiry-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(0,0,0,.06);
+            transition: .3s;
+
+            &:hover{
+                transform: translateY(-3px);
+                box-shadow: 0 15px 35px rgba(0,0,0,.08);
+            }
+
+            .top{
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                margin-bottom:20px;
+
+                .buyer-info{
+                    display:flex;
+                    align-items:center;
+                    gap:15px;
+
+                    img{
+                        width:55px;
+                        height:55px;
+                        border-radius:50%;
+                        object-fit:cover;
+                    }
+
+                    .buyer-avatar{
+                        width:55px;
+                        height:55px;
+                        border-radius:50%;
+                        background:var(--accent);
+                        color:#fff;
+                        display:flex;
+                        justify-content:center;
+                        align-items:center;
+                        font-size:22px;
+                        font-weight:700;
+                    }
+
+                    h3{
+                        font-size:18px;
+                        color:var(--primary);
+                    }
+
+                    small{
+                        color:#777;
+                    }
+                }
+            }
+
+            .status{
+                padding:8px 16px;
+                border-radius:30px;
+                font-size:13px;
+                font-weight:600;
+                text-transform:capitalize;
+            }
+
+            .status.pending{
+                background:#fff4d6;
+                color:#d97706;
+            }
+
+            .status.replied{
+                background:#dcfce7;
+                color:#15803d;
+            }
+
+            .status.closed{
+                background:#e5e7eb;
+                color:#4b5563;
+            }
+
+            .property-box{
+
+                margin-bottom:18px;
+
+                h4{
+                    font-size:18px;
+                    color:var(--primary);
+                    margin-bottom:8px;
+                }
+
+                p{
+                    color:var(--accent);
+                    font-weight:700;
+                }
+            }
+
+            .message{
+                background:#f8fafc;
+                border-left:4px solid var(--accent);
+                padding:15px;
+                border-radius:8px;
+                margin-bottom:20px;
+                color:#555;
+                line-height:1.7;
+            }
+
+            .bottom{
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+
+                small{
+                    color:#888;
+                }
+
+                .actions{
+                    display:flex;
+                    gap:12px;
+
+                    button{
+                        padding:10px 20px;
+                        border:none;
+                        border-radius:8px;
+                        cursor:pointer;
+                        font-size:14px;
+                        font-weight:600;
+                        transition:.3s;
+                    }
+
+                    .view-btn{
+                        background:#f1f5f9;
+                        color:#333;
+
+                        &:hover{
+                            background:#e2e8f0;
+                        }
+                    }
+
+                    .reply-btn{
+                        background:var(--accent);
+                        color:#fff;
+
+                        &:hover{
+                            opacity:.9;
+                        }
+                    }
+
+                    .delete-btn{
+                        background:#ef4444;
+                        color:#fff;
+
+                        &:hover{
+                            background:#dc2626;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media(max-width:992px){
+
+    .inquiry-parent{
+
+        .inquiry-cont{
+
+            .page-header{
+                flex-direction:column;
+                align-items:flex-start;
+
+                input{
+                    width:100%;
+                }
+            }
+
+            .inquiry-card{
+
+                .bottom{
+                    flex-direction:column;
+                    align-items:flex-start;
+                    gap:20px;
+
+                    .actions{
+                        width:100%;
+                        flex-wrap:wrap;
+
+                        button{
+                            flex:1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media(max-width:576px){
+
+    .inquiry-parent{
+
+        .inquiry-cont{
+
+            .inquiry-card{
+
+                padding:18px;
+
+                .top{
+                    flex-direction:column;
+                    align-items:flex-start;
+                    gap:15px;
+                }
+
+                .buyer-info{
+
+                    img,
+                    .buyer-avatar{
+                        width:45px !important;
+                        height:45px !important;
+                    }
+                }
+            }
+        }
+    }
+}

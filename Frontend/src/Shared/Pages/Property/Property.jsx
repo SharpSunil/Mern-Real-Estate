@@ -18,6 +18,65 @@ const Property = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
+    const [showInquiry, setShowInquiry] = useState(false);
+
+    const [inquiryMessage, setInquiryMessage] = useState("");
+
+    const [sendingInquiry, setSendingInquiry] = useState(false);
+    const handleSendInquiry = async () => {
+
+        if (!inquiryMessage.trim()) {
+            alert("Please write your inquiry.");
+            return;
+        }
+
+        try {
+
+            setSendingInquiry(true);
+
+            const token = localStorage.getItem("token");
+
+            const res = await axios.post(
+
+                `${API_URL}/api/inquiry`,
+
+                {
+                    propertyId: property._id,
+                    message: inquiryMessage,
+                },
+
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+
+            );
+
+            alert("Inquiry sent successfully.");
+
+            setInquiryMessage("");
+
+            setShowInquiry(false);
+
+        } catch (error) {
+
+            console.log(error);
+
+            alert(
+                error.response?.data?.message ||
+                "Unable to send inquiry."
+            );
+
+        } finally {
+
+            setSendingInquiry(false);
+
+        }
+
+    };
+
+
     useEffect(() => {
         const fetchProperty = async () => {
             try {
@@ -202,8 +261,41 @@ const Property = () => {
                                     </div>
                                 </div>
                                 <div className="middle">
-                                    <div className="chat"><BiSolidMessageSquareDetail /><span>Chat</span></div>
-                                    <div className="inquire">Inquire</div>
+
+                                    {user && user.role === "buyer" ? (
+
+                                        <>
+                                            <div
+                                                className="chat"
+                                                onClick={handleStartChat}
+                                            >
+                                                <BiSolidMessageSquareDetail />
+                                                <span>Chat</span>
+                                            </div>
+
+                                            <div
+                                                className="inquire"
+                                                onClick={() => setShowInquiry(true)}
+                                            >
+                                                Inquire
+                                            </div>
+                                        </>
+
+                                    ) : (
+
+                                        <>
+                                            <div className="chat disabled">
+                                                <BiSolidMessageSquareDetail />
+                                                <span>Chat</span>
+                                            </div>
+
+                                            <div className="inquire disabled">
+                                                Inquire
+                                            </div>
+                                        </>
+
+                                    )}
+
                                 </div>
                                 <div className="last-box">
                                     {!user ? (
@@ -231,6 +323,69 @@ const Property = () => {
                                         </>
                                     )}
                                 </div>
+                                {
+                                    showInquiry && (
+
+                                        <div className="inquiry-modal">
+
+                                            <div className="inquiry-box">
+
+                                                <h3>
+
+                                                    Send Inquiry
+
+                                                </h3>
+
+                                                <textarea
+
+                                                    placeholder="Write your inquiry..."
+
+                                                    rows={5}
+
+                                                    value={inquiryMessage}
+
+                                                    onChange={(e) =>
+
+                                                        setInquiryMessage(
+                                                            e.target.value
+                                                        )
+
+                                                    }
+
+                                                />
+
+                                                <div className="buttons">
+
+                                                    <button
+                                                        className="cancel"
+                                                        onClick={() =>
+                                                            setShowInquiry(false)
+                                                        }
+                                                    >
+
+                                                        Cancel
+
+                                                    </button>
+
+                                                    <button
+                                                        className="send"
+                                                        onClick={handleSendInquiry}
+                                                    >
+
+                                                        {sendingInquiry
+                                                            ? "Sending..."
+                                                            : "Send Inquiry"}
+
+                                                    </button>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    )
+                                }
                             </div>
                         </div>
 

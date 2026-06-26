@@ -2,6 +2,7 @@ import express from "express";
 import { protect } from "../middlewares/auth.middleware.js";
 
 import Chat from "../models/Chat.model.js";
+import Inquiry from "../models/inquiry.model.js";
 const chatRouter = express.Router();
 
 
@@ -151,7 +152,36 @@ chatRouter.post("/send", async (req, res) => {
 
         // updatedAt automatically updates because timestamps:true
 
+        // updatedAt automatically updates because timestamps:true
+
         await chat.save();
+
+        // ======================================
+        // Update Inquiry Status
+        // ======================================
+
+        if (req.user.role === "seller") {
+
+            await Inquiry.findOneAndUpdate(
+
+                {
+                    property: chat.property,
+                    buyer: chat.buyer,
+                    seller: chat.seller,
+                    status: "pending",
+                },
+
+                {
+                    $set: {
+                        status: "replied",
+                        isRead: true,
+                        chat: chat._id,
+                    },
+                }
+
+            );
+
+        }
 
         // Return populated chat
         const updatedChat = await Chat.findById(chat._id)

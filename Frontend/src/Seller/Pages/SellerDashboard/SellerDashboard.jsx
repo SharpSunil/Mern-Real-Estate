@@ -13,16 +13,18 @@ import DashboardContent from "../DashboardContent/Dashboardcontet";
 import MyProperties from "../MyProperties/MyProperties";
 import AddProperty from "../AddProperty/AddProperty";
 import SellerChat from "../SellerChat/SellerChat";
+import Inquiry from "../Inquiries/Inquiry";
+import SellerProfile from "../Profile/SellerProfile";
 const SellerDashboard = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
 
-
+    const [selectedChatId, setSelectedChatId] = useState(null);
 
     return (
         <div className="seller-parent parent">
             <div className="seller-cont cont">
                 {/* Sidebar */}
-                
+
                 <div className="sidebar">
                     <div className="first">
                         <img
@@ -95,10 +97,24 @@ const SellerDashboard = () => {
                 {/* Content */}
                 <div className="right-side">
                     {activeTab === "dashboard" && <DashboardContent />}
+
                     {activeTab === "properties" && <MyProperties />}
+
                     {activeTab === "add" && <AddProperty />}
-                    {activeTab === "chat" && <SellerChat />}
-                    {activeTab === "inquiry" && <SellerInquiry />}
+
+                    {activeTab === "chat" && (
+                        <SellerChat
+                            selectedChatId={selectedChatId}
+                        />
+                    )}
+
+                    {activeTab === "inquiry" && (
+                        <Inquiry
+                            setActiveTab={setActiveTab}
+                            setSelectedChatId={setSelectedChatId}
+                        />
+                    )}
+
                     {activeTab === "profile" && <SellerProfile />}
                 </div>
             </div>
