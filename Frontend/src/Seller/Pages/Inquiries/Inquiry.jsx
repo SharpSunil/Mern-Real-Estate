@@ -42,6 +42,7 @@ const Inquiry = ({
                     },
                 }
             );
+            console.log(res.data.inquiries, "inquiries lksjfdklsdf kfdsjklsdfj lkjsdflk ");
 
             setInquiries(
                 res.data.inquiries
@@ -93,7 +94,12 @@ const Inquiry = ({
 
             if (item.chat) {
 
-                setSelectedChatId(item.chat);
+                const chatId =
+                    typeof item.chat === "object"
+                        ? item.chat._id
+                        : item.chat;
+
+                setSelectedChatId(chatId);
 
                 setActiveTab("chat");
 
@@ -117,7 +123,9 @@ const Inquiry = ({
 
             );
 
-            setSelectedChatId(res.data._id);
+            setSelectedChatId(
+                res.data._id || res.data.chat?._id
+            );
 
             setActiveTab("chat");
 

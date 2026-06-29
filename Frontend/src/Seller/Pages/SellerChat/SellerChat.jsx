@@ -3,9 +3,6 @@ import React, {
     useState,
     useRef,
 } from "react";
-import {
-    useParams,
-} from "react-router-dom";
 
 import axios from "axios";
 
@@ -13,72 +10,72 @@ import "./SellerChat.scss";
 
 import API_URL from "../../../Config";
 
-const SellerChat = () => {
+const SellerChat = ({ selectedChatId }) => {
 
     const token = localStorage.getItem("token");
 
     const user = JSON.parse(
         localStorage.getItem("user")
     );
-    const { chatId } = useParams();
 
-    const [loading, setLoading] =
-        useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const [chats, setChats] =
-        useState([]);
+    const [chats, setChats] = useState([]);
 
-    const [filteredChats, setFilteredChats] =
-        useState([]);
+    const [filteredChats, setFilteredChats] = useState([]);
 
-    const [selectedChat, setSelectedChat] =
-        useState(null);
+    const [selectedChat, setSelectedChat] = useState(null);
 
-    const [message, setMessage] =
-        useState("");
+    const [message, setMessage] = useState("");
 
-    const [search, setSearch] =
-        useState("");
+    const [search, setSearch] = useState("");
 
-    const messagesEndRef =
-        useRef(null);
+    const messagesEndRef = useRef(null);
+    const previousChatId = useRef(null);
 
-    const firstLoad =
-        useRef(true);
-
-    //============================
+    // ==========================
     // Fetch Chats
-    //============================
+    // ==========================
 
     const fetchChats = async () => {
 
         try {
 
             const res = await axios.get(
+
                 `${API_URL}/api/chat/user`,
+
                 {
+
                     headers: {
+
                         Authorization: `Bearer ${token}`,
+
                     },
+
                 }
+
             );
 
-            const list =
-                res.data.chats || [];
+            // Latest chat first
+
+            const list = [...(res.data.chats || [])].sort(
+
+                (a, b) =>
+
+                    new Date(b.updatedAt) -
+
+                    new Date(a.updatedAt)
+
+            );
 
             setChats(list);
 
             setFilteredChats(list);
 
-            if (
-                list.length > 0 &&
-                !selectedChat && 
-                !chatId
-            ) {
-                loadChat(list[0]._id);
-            }
+        }
 
-        } catch (error) {
+        catch (error) {
 
             console.log(error);
 
@@ -86,39 +83,47 @@ const SellerChat = () => {
 
     };
 
-    //============================
-    // Load Chat
-    //============================
+    // ==========================
+    // Load Selected Chat
+    // ==========================
 
-    const loadChat = async (
-        chatId
-    ) => {
+    const loadChat = async (chatId) => {
+
+        if (!chatId) return;
+
+        if (typeof chatId === "object") {
+
+            chatId = chatId._id;
+
+        }
 
         try {
-
-            firstLoad.current = true;
 
             setLoading(true);
 
             const res = await axios.get(
+
                 `${API_URL}/api/chat/${chatId}`,
+
                 {
                     headers: {
-                        Authorization:
-                            `Bearer ${token}`,
+                        Authorization: `Bearer ${token}`,
                     },
                 }
+
             );
 
-            setSelectedChat(
-                res.data.chat
-            );
+            setSelectedChat(res.data.chat);
 
-        } catch (error) {
+        }
+
+        catch (error) {
 
             console.log(error);
 
-        } finally {
+        }
+
+        finally {
 
             setLoading(false);
 
@@ -126,168 +131,224 @@ const SellerChat = () => {
 
     };
 
-    //============================
-    // Search
-    //============================
+
+    // ==========================
+    // Send Message
+    // ==========================
+
+    const sendMessage = async () => {
+
+        if (!message.trim()) return;
+
+        try {
+
+            await axios.post(
+
+                `${API_URL}/api/chat/send`,
+
+                {
+                    chatId: selectedChat._id,
+                    text: message,
+                },
+
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+
+            );
+
+            setMessage("");
+
+            // Reload current chat
+
+            await loadChat(selectedChat._id);
+
+            // Refresh sidebar so latest chat comes first
+
+            await fetchChats();
+
+        }
+
+        catch (error) {
+
+            console.log(error);
+
+        }
+
+    };
+    // ==========================
+    // Initial Fetch
+    // ==========================
 
     useEffect(() => {
 
-        const filtered =
-            chats.filter((chat) => {
+        fetchChats();
 
-                return (
+    }, []);
 
-                    chat.buyer?.name
-                        ?.toLowerCase()
-                        .includes(
-                            search.toLowerCase()
-                        )
 
-                    ||
+    // ==========================
+    // Auto Refresh Chat List
+    // ==========================
 
-                    chat.property?.title
-                        ?.toLowerCase()
-                        .includes(
-                            search.toLowerCase()
-                        )
+    useEffect(() => {
 
-                );
+        const interval = setInterval(() => {
 
-            });
+            fetchChats();
 
-        setFilteredChats(
-            filtered
-        );
+        }, 3000);
 
-    }, [search, chats]);
+        return () => clearInterval(interval);
 
-    //============================
-    // Send Message
-    //============================
+    }, []);
 
-    const sendMessage =
-        async () => {
 
-            if (!message.trim())
-                return;
+    // ==========================
+    // Open Chat From Inquiry
+    // ==========================
+
+    useEffect(() => {
+
+        if (!selectedChatId) return;
+
+        const chatId =
+            typeof selectedChatId === "object"
+                ? selectedChatId._id
+                : selectedChatId;
+
+        loadChat(chatId);
+
+    }, [selectedChatId]);
+
+
+    // ==========================
+    // Refresh Current Chat
+    // ==========================
+    useEffect(() => {
+
+        if (!selectedChat?._id) return;
+
+        const interval = setInterval(async () => {
 
             try {
 
-                await axios.post(
+                const res = await axios.get(
 
-                    `${API_URL}/api/chat/send`,
-
-                    {
-                        chatId:
-                            selectedChat._id,
-
-                        text: message,
-                    },
+                    `${API_URL}/api/chat/${selectedChat._id}`,
 
                     {
                         headers: {
-                            Authorization:
-                                `Bearer ${token}`,
+                            Authorization: `Bearer ${token}`,
                         },
                     }
 
                 );
 
-                setMessage("");
+                setSelectedChat((prev) => {
 
-                loadChat(
-                    selectedChat._id
-                );
+                    // Don't update state if nothing changed
+                    if (
+                        prev &&
+                        JSON.stringify(prev.messages) ===
+                        JSON.stringify(res.data.chat.messages)
+                    ) {
+                        return prev;
+                    }
 
-                fetchChats();
+                    return res.data.chat;
 
-            } catch (error) {
+                });
 
-                console.log(error);
+            } catch (err) {
+
+                console.log(err);
 
             }
 
-        };
+        }, 3000);
 
-    //============================
-    // Auto Scroll
-    //============================
+        return () => clearInterval(interval);
+
+    }, [selectedChat?._id]);
+
+
+    // ==========================
+    // Search Chats
+    // ==========================
 
     useEffect(() => {
 
-        if (!selectedChat)
-            return;
+        const filtered = chats.filter((chat) => {
 
-        if (
-            firstLoad.current
-        ) {
+            return (
 
-            firstLoad.current =
-                false;
+                chat.buyer?.name
+                    ?.toLowerCase()
+                    .includes(search.toLowerCase())
 
-            return;
+                ||
 
-        }
+                chat.property?.title
+                    ?.toLowerCase()
+                    .includes(search.toLowerCase())
 
-        messagesEndRef.current
-            ?.scrollIntoView({
+            );
 
-                behavior:
-                    "smooth",
+        });
+
+        setFilteredChats(filtered);
+
+    }, [search, chats]);
+
+
+    // ==========================
+    // Auto Scroll
+    // ==========================
+useEffect(() => {
+
+    if (!selectedChat) return;
+
+    if (previousChatId.current === selectedChat._id) return;
+
+    previousChatId.current = selectedChat._id;
+
+    requestAnimationFrame(() => {
+
+        requestAnimationFrame(() => {
+
+            messagesEndRef.current?.scrollIntoView({
+
+                behavior: "smooth",
 
                 block: "end",
 
             });
 
-    }, [
-        selectedChat?.messages,
-    ]);
+        });
 
-    //============================
-    // Initial Fetch
-    //============================
+    });
 
-   useEffect(() => {
+}, [selectedChat]);
 
-    fetchChats();
+    // ==========================
+    // Start JSX
+    // ==========================
 
-    if (chatId) {
-
-        loadChat(chatId);
-
-    }
-
-    const interval = setInterval(() => {
-
-        fetchChats();
-
-        if (chatId) {
-
-            loadChat(chatId);
-
-        } else if (selectedChat?._id) {
-
-            loadChat(selectedChat._id);
-
-        }
-
-    }, 3000);
-
-    return () => clearInterval(interval);
-
-}, [chatId, selectedChat?._id]);
     return (
-        <div className="seller-chat-parent parent">
-            <h2>Buyer Chats</h2>
-            <div className="seller-chat-cont cont">
 
+        <div className="seller-chat-parent parent">
+
+            <h2>Buyer Chats</h2>
+
+            <div className="seller-chat-cont cont">
                 {/* ================= Sidebar ================= */}
 
                 <div className="chat-sidebar">
 
                     <div className="sidebar-header">
-
-
 
                         <input
                             type="text"
@@ -315,17 +376,16 @@ const SellerChat = () => {
                             filteredChats.map((chat) => {
 
                                 const unread =
-                                    chat.unreadForSeller;
+                                    chat.unreadForSeller || 0;
+
+                                const isActive =
+                                    selectedChat?._id === chat._id;
 
                                 return (
 
                                     <div
                                         key={chat._id}
-                                        className={`chat-user ${selectedChat?._id ===
-                                            chat._id
-                                            ? "active"
-                                            : ""
-                                            }`}
+                                        className={`chat-user ${isActive ? "active" : ""}`}
                                         onClick={() =>
                                             loadChat(chat._id)
                                         }
@@ -345,20 +405,15 @@ const SellerChat = () => {
 
                                             ) : (
 
-                                                <span className="buyer-initial">
+                                                <div className="buyer-initial">
+
                                                     {chat.buyer?.name
                                                         ?.charAt(0)
                                                         .toUpperCase()}
-                                                </span>
+
+                                                </div>
 
                                             )}
-                                            <h4>{
-                                                chat.buyer
-                                                    ?.name
-                                            }</h4>
-
-
-
 
                                         </div>
 
@@ -368,15 +423,12 @@ const SellerChat = () => {
 
                                             <div className="topp">
 
-                                                <small>
+                                                <h4>
 
-                                                    🏠{" "}
-                                                    {
-                                                        chat.property
-                                                            ?.title
-                                                    }
+                                                    {chat.buyer?.name}
 
-                                                </small>
+                                                </h4>
+
                                                 <span>
 
                                                     {new Date(
@@ -393,7 +445,11 @@ const SellerChat = () => {
 
                                             </div>
 
+                                            <small>
 
+                                                🏠 {chat.property?.title}
+
+                                            </small>
 
                                             <div className="bottom">
 
@@ -408,9 +464,7 @@ const SellerChat = () => {
 
                                                     <div className="badge">
 
-                                                        {
-                                                            unread
-                                                        }
+                                                        {unread}
 
                                                     </div>
 
@@ -440,10 +494,16 @@ const SellerChat = () => {
 
                         <div className="no-chat-selected">
 
-                            <h2>Select a conversation</h2>
+                            <h2>
+
+                                Select a conversation
+
+                            </h2>
 
                             <p>
+
                                 Select any buyer from the left to start chatting.
+
                             </p>
 
                         </div>
@@ -451,7 +511,6 @@ const SellerChat = () => {
                     ) : (
 
                         <>
-
                             {/* ================= Header ================= */}
 
                             <div className="chat-header">
@@ -464,14 +523,18 @@ const SellerChat = () => {
 
                                             <img
                                                 src={selectedChat.buyer.profilePic}
-                                                alt=""
+                                                alt={selectedChat.buyer?.name}
                                             />
 
                                         ) : (
 
-                                            selectedChat.buyer?.name
-                                                ?.charAt(0)
-                                                .toUpperCase()
+                                            <span>
+
+                                                {selectedChat.buyer?.name
+                                                    ?.charAt(0)
+                                                    .toUpperCase()}
+
+                                            </span>
 
                                         )}
 
@@ -501,7 +564,15 @@ const SellerChat = () => {
 
                             <div className="messages">
 
-                                {selectedChat.messages.length === 0 ? (
+                                {loading ? (
+
+                                    <div className="empty-message">
+
+                                        Loading...
+
+                                    </div>
+
+                                ) : selectedChat.messages.length === 0 ? (
 
                                     <div className="empty-message">
 
@@ -519,15 +590,14 @@ const SellerChat = () => {
                                                 : msg.sender;
 
                                         const isMe =
-                                            senderId.toString() ===
-                                            user._id.toString();
+                                            senderId?.toString() ===
+                                            user?._id?.toString();
 
                                         return (
 
                                             <div
                                                 key={msg._id}
-                                                className={`message-row ${isMe ? "me" : "other"
-                                                    }`}
+                                                className={`message-row ${isMe ? "me" : "other"}`}
                                             >
 
                                                 <div className="message-box">
@@ -571,13 +641,13 @@ const SellerChat = () => {
 
                                                         {new Date(
                                                             msg.createdAt
-                                                        ).toLocaleTimeString(
-                                                            [],
-                                                            {
-                                                                hour: "2-digit",
-                                                                minute: "2-digit",
-                                                            }
-                                                        )}
+                                                        ).toLocaleTimeString([], {
+
+                                                            hour: "2-digit",
+
+                                                            minute: "2-digit",
+
+                                                        })}
 
                                                     </span>
 
@@ -600,12 +670,17 @@ const SellerChat = () => {
                             <div className="chat-footer">
 
                                 <input
+
                                     type="text"
+
                                     placeholder="Type your message..."
+
                                     value={message}
+
                                     onChange={(e) =>
                                         setMessage(e.target.value)
                                     }
+
                                     onKeyDown={(e) => {
 
                                         if (e.key === "Enter") {
@@ -615,6 +690,7 @@ const SellerChat = () => {
                                         }
 
                                     }}
+
                                 />
 
                                 <button
@@ -636,7 +712,9 @@ const SellerChat = () => {
             </div>
 
         </div>
-    );
-}
 
-export default SellerChat
+    );
+
+};
+
+export default SellerChat;

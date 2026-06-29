@@ -2,7 +2,7 @@ import Property from "../models/property.model.js";
 import Inquiry from "../models/inquiry.model.js";
 import jwt from "jsonwebtoken";
 import User from "../models/usermodel.js";
-
+import Chat from "../models/chat.model.js";
 
 //Add a Property
 
@@ -389,40 +389,141 @@ export const getPropertyDetails = async (req, res) => {
 
 
 
-//seller dashbaord to get all the inquiries for his properties
+// ==========================================
+// Seller Dashboard
+// ==========================================
+
+
+
 export const getSellerDashboard = async (req, res) => {
+
     try {
 
         const sellerId = req.user._id;
-        const totalProperties = await Property.countDocuments({ seller: sellerId });
-        const activeProperties = await Property.countDocuments({ seller: sellerId, status: "available" });
-        const soldProperties = await Property.countDocuments({ seller: sellerId, status: "sold" });
-        const totalInquiries = await Inquiry.countDocuments({ seller: sellerId });
-        //calculate the views for all properties
-        const viewsData = await Property.aggregate([
-            { $match: { seller: sellerId } },
-            { $group: { _id: null, totalViews: { $sum: "$views" } } },
+
+        // ===============================
+        // Property Counts
+        // ===============================
+
+        const totalProperties = await Property.countDocuments({
+            seller: sellerId,
+        });
+
+        const activeListings = await Property.countDocuments({
+            seller: sellerId,
+            status: "available",
+        });
+
+        const soldProperties = await Property.countDocuments({
+            seller: sellerId,
+            status: "sold",
+        });
+
+        // ===============================
+        // Inquiry Count
+        // ===============================
+
+        const totalInquiries = await Inquiry.countDocuments({
+            seller: sellerId,
+        });
+
+        // ===============================
+        // Unread Chats
+        // ===============================
+
+        const chats = await Chat.find({
+            seller: sellerId,
+        });
+
+        let unreadChats = 0;
+
+        chats.forEach((chat) => {
+
+            unreadChats += chat.unreadForSeller;
+
+        });
+
+        // ===============================
+        // Total Views
+        // ===============================
+
+        const views = await Property.aggregate([
+            {
+                $match: {
+                    seller: sellerId,
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalViews: {
+                        $sum: "$views",
+                    },
+                },
+            },
         ]);
-        const totalViews = viewsData.length > 0 ? viewsData[0].totalViews : 0;
+
+        const totalViews =
+            views.length > 0
+                ? views[0].totalViews
+                : 0;
+
+        // ===============================
+        // Recent Properties
+        // ===============================
+
+        const recentProperties = await Property.find({
+            seller: sellerId,
+        })
+            .sort({ createdAt: -1 })
+            .limit(5)
+            .select("title createdAt");
+
+        // ===============================
+        // Response
+        // ===============================
+
         res.json({
+
             success: true,
+
             stats: {
+
                 totalProperties,
-                activeProperties,
+
+                activeListings,
+
                 soldProperties,
+
                 totalInquiries,
+
+                unreadChats,
+
                 totalViews,
-            }
-        })
-    } catch (error) {
-        console.error("Error fetching seller dashboard: ", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error while fetching seller dashboard",
-            error: error.message,
-        })
+
+                recentActivity: recentProperties,
+
+            },
+
+        });
+
     }
-}
+
+    catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            success: false,
+
+            message: error.message,
+
+        });
+
+    }
+
+};
 
 
 

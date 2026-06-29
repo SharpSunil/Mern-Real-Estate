@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "./Seller.scss";
 
 import { MdAddchart, MdOutlineDashboard } from "react-icons/md";
-import { FaBuilding } from "react-icons/fa";
 import { LuTableProperties } from "react-icons/lu";
 import { IoLogOutOutline } from "react-icons/io5";
 import { IoMdChatboxes } from "react-icons/io";
@@ -15,30 +14,58 @@ import AddProperty from "../AddProperty/AddProperty";
 import SellerChat from "../SellerChat/SellerChat";
 import Inquiry from "../Inquiries/Inquiry";
 import SellerProfile from "../Profile/SellerProfile";
+
 const SellerDashboard = () => {
+
     const [activeTab, setActiveTab] = useState("dashboard");
 
     const [selectedChatId, setSelectedChatId] = useState(null);
 
+    const [user, setUser] = useState(
+        JSON.parse(localStorage.getItem("user"))
+    );
+
     return (
+
         <div className="seller-parent parent">
+
             <div className="seller-cont cont">
+
                 {/* Sidebar */}
 
                 <div className="sidebar">
+
                     <div className="first">
-                        <img
-                            src="https://randomuser.me/api/portraits/men/1.jpg"
-                            alt="User"
-                        />
+
+                        {user?.profilePic ? (
+
+                            <img
+                                src={user.profilePic}
+                                alt={user.name}
+                            />
+
+                        ) : (
+
+                            <div className="avatar">
+
+                                {user?.name?.charAt(0).toUpperCase()}
+
+                            </div>
+
+                        )}
 
                         <div className="user-info">
-                            <h4>Vikram Shelke</h4>
-                            <p>Seller</p>
+
+                            <h4>{user?.name}</h4>
+
+                            <p>{user?.role}</p>
+
                         </div>
+
                     </div>
 
                     <ul className="list">
+
                         <li
                             className={activeTab === "dashboard" ? "active" : ""}
                             onClick={() => setActiveTab("dashboard")}
@@ -86,16 +113,23 @@ const SellerDashboard = () => {
                             <CgProfile />
                             <span>Profile</span>
                         </li>
+
                     </ul>
 
                     <div className="last">
+
                         <IoLogOutOutline />
+
                         <span>Logout</span>
+
                     </div>
+
                 </div>
 
-                {/* Content */}
+                {/* Right Side */}
+
                 <div className="right-side">
+
                     {activeTab === "dashboard" && <DashboardContent />}
 
                     {activeTab === "properties" && <MyProperties />}
@@ -103,23 +137,39 @@ const SellerDashboard = () => {
                     {activeTab === "add" && <AddProperty />}
 
                     {activeTab === "chat" && (
+
                         <SellerChat
                             selectedChatId={selectedChatId}
                         />
+
                     )}
 
                     {activeTab === "inquiry" && (
+
                         <Inquiry
                             setActiveTab={setActiveTab}
                             setSelectedChatId={setSelectedChatId}
                         />
+
                     )}
 
-                    {activeTab === "profile" && <SellerProfile />}
+                    {activeTab === "profile" && (
+
+                        <SellerProfile
+                            user={user}
+                            setUser={setUser}
+                        />
+
+                    )}
+
                 </div>
+
             </div>
+
         </div>
+
     );
+
 };
 
 export default SellerDashboard;

@@ -58,7 +58,7 @@ export const getSellerInquiries = async (req, res) => {
         })
             .populate("buyer", "name email phone profilePic")
             .populate("property", "title price images city")
-            .populate("chat")
+            .populate("chat", "_id")
             .sort({ createdAt: -1 });
 
         res.status(200).json({
@@ -89,7 +89,7 @@ export const getBuyerInquiries = async (req, res) => {
         })
             .populate("seller", "name email phone profilePic")
             .populate("property", "title price images city")
-            .populate("chat")
+            .populate("chat", "_id")
             .sort({ createdAt: -1 });
 
         res.status(200).json({
