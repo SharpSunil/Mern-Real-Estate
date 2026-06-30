@@ -137,6 +137,10 @@
             border-radius: 10px;
             background: var(--white);
             box-shadow: var(--shadow);
+            img{
+              width:100px;height:100px;
+              border-radius:5px;
+            }
             span {
               display: block;
 
