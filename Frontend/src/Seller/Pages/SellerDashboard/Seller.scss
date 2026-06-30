@@ -107,7 +107,28 @@
 
       padding: 25px;
       border-radius: 0 10px 10px 0;
+      height: calc(99vh - 90px); // Adjust according to your header height
+      overflow-y: auto;
+      overflow-x: hidden;
 
+      /* Scrollbar */
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: var(--accent);
+        border-radius: 10px;
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background: #0a8c70;
+      }
       //add property form
       .add-property-form {
         display: flex;

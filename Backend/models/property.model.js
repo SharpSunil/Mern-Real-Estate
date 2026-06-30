@@ -51,7 +51,18 @@ const propertySchema = new mongoose.Schema({
         enum: ["available", "sold"],
 
     },
-    images: [{ type: String }],
+    images: [
+        {
+            url: {
+                type: String,
+                required: true,
+            },
+            public_id: {
+                type: String,
+                required: true,
+            },
+        },
+    ],
     seller: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -66,7 +77,7 @@ const propertySchema = new mongoose.Schema({
         default: 0,
     },
     viewedBy: [{ type: String }],
-},{
+}, {
     timestamps: true
 }
 

@@ -27,6 +27,9 @@ const SellerChat = ({ selectedChatId }) => {
     const [selectedChat, setSelectedChat] = useState(null);
 
     const [message, setMessage] = useState("");
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const [previewImage, setPreviewImage] = useState("");
 
     const [search, setSearch] = useState("");
 
@@ -136,36 +139,65 @@ const SellerChat = ({ selectedChatId }) => {
     // Send Message
     // ==========================
 
+    // ==========================
+    // Send Message
+    // ==========================
+
     const sendMessage = async () => {
 
-        if (!message.trim()) return;
+        if (!message.trim() && !selectedImage) return;
 
         try {
+
+            const formData = new FormData();
+
+            formData.append(
+                "chatId",
+                selectedChat._id
+            );
+
+            formData.append(
+                "text",
+                message
+            );
+
+            if (selectedImage) {
+
+                formData.append(
+                    "image",
+                    selectedImage
+                );
+
+            }
 
             await axios.post(
 
                 `${API_URL}/api/chat/send`,
 
-                {
-                    chatId: selectedChat._id,
-                    text: message,
-                },
+                formData,
 
                 {
+
                     headers: {
+
                         Authorization: `Bearer ${token}`,
+
+                        "Content-Type":
+                            "multipart/form-data",
+
                     },
+
                 }
 
             );
 
             setMessage("");
 
-            // Reload current chat
+            setSelectedImage(null);
+
+            setPreviewImage("");
 
             await loadChat(selectedChat._id);
-
-            // Refresh sidebar so latest chat comes first
 
             await fetchChats();
 
@@ -178,6 +210,27 @@ const SellerChat = ({ selectedChatId }) => {
         }
 
     };
+    // ==========================
+    // Select Image
+    // ==========================
+
+    const handleImageChange = (e) => {
+
+        const file = e.target.files[0];
+
+        if (!file) return;
+
+        setSelectedImage(file);
+
+        setPreviewImage(
+
+            URL.createObjectURL(file)
+
+        );
+
+    };
+
+
     // ==========================
     // Initial Fetch
     // ==========================
@@ -307,31 +360,31 @@ const SellerChat = ({ selectedChatId }) => {
     // ==========================
     // Auto Scroll
     // ==========================
-useEffect(() => {
+    useEffect(() => {
 
-    if (!selectedChat) return;
+        if (!selectedChat) return;
 
-    if (previousChatId.current === selectedChat._id) return;
+        if (previousChatId.current === selectedChat._id) return;
 
-    previousChatId.current = selectedChat._id;
-
-    requestAnimationFrame(() => {
+        previousChatId.current = selectedChat._id;
 
         requestAnimationFrame(() => {
 
-            messagesEndRef.current?.scrollIntoView({
+            requestAnimationFrame(() => {
 
-                behavior: "smooth",
+                messagesEndRef.current?.scrollIntoView({
 
-                block: "end",
+                    behavior: "smooth",
+
+                    block: "end",
+
+                });
 
             });
 
         });
 
-    });
-
-}, [selectedChat]);
+    }, [selectedChat]);
 
     // ==========================
     // Start JSX
@@ -613,13 +666,26 @@ useEffect(() => {
                                                     ) : (
 
                                                         <>
+                                                            {msg.image?.url && (
 
-                                                            {msg.image && (
+                                                                <div className="chat-image">
 
-                                                                <img
-                                                                    src={msg.image}
-                                                                    alt=""
-                                                                />
+                                                                    <img
+
+                                                                        src={msg.image.url}
+
+                                                                        alt="chat"
+
+                                                                        onClick={() =>
+                                                                            window.open(
+                                                                                msg.image.url,
+                                                                                "_blank"
+                                                                            )
+                                                                        }
+
+                                                                    />
+
+                                                                </div>
 
                                                             )}
 
@@ -663,43 +729,102 @@ useEffect(() => {
 
                                 <div ref={messagesEndRef}></div>
 
-                            </div>
-
+                            </div> 
                             {/* ================= Footer ================= */}
 
                             <div className="chat-footer">
 
-                                <input
+                                {/* Preview Selected Image */}
 
-                                    type="text"
+                                {previewImage && (
 
-                                    placeholder="Type your message..."
+                                    <div className="image-preview">
 
-                                    value={message}
+                                        <img
+                                            src={previewImage}
+                                            alt="preview"
+                                        />
 
-                                    onChange={(e) =>
-                                        setMessage(e.target.value)
-                                    }
+                                        <button
+                                            className="remove-image"
 
-                                    onKeyDown={(e) => {
+                                            onClick={() => {
 
-                                        if (e.key === "Enter") {
+                                                setSelectedImage(null);
 
-                                            sendMessage();
+                                                setPreviewImage("");
+
+                                            }}
+
+                                        >
+
+                                            ✕
+
+                                        </button>
+
+                                    </div>
+
+                                )}
+
+                                <div className="footer-bottom">
+
+                                    <label
+                                        className="image-upload"
+                                    >
+
+                                        📎
+
+                                        <input
+
+                                            type="file"
+
+                                            accept="image/*"
+
+                                            hidden
+
+                                            onChange={handleImageChange}
+
+                                        />
+
+                                    </label>
+
+                                    <input
+
+                                        type="text"
+
+                                        placeholder="Type your message..."
+
+                                        value={message}
+
+                                        onChange={(e) =>
+
+                                            setMessage(e.target.value)
 
                                         }
 
-                                    }}
+                                        onKeyDown={(e) => {
 
-                                />
+                                            if (e.key === "Enter") {
 
-                                <button
-                                    onClick={sendMessage}
-                                >
+                                                sendMessage();
 
-                                    Send
+                                            }
 
-                                </button>
+                                        }}
+
+                                    />
+
+                                    <button
+
+                                        onClick={sendMessage}
+
+                                    >
+
+                                        Send
+
+                                    </button>
+
+                                </div>
 
                             </div>
 

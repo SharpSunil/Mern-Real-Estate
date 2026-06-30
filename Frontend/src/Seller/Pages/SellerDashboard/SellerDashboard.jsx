@@ -130,7 +130,11 @@ const SellerDashboard = () => {
 
                 <div className="right-side">
 
-                    {activeTab === "dashboard" && <DashboardContent />}
+                    {activeTab === "dashboard" && (
+                        <DashboardContent
+                            setActiveTab={setActiveTab}
+                        />
+                    )}
 
                     {activeTab === "properties" && <MyProperties />}
 

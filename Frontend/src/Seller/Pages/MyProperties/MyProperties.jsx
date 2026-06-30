@@ -1,4 +1,10 @@
-import React, { useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from "react";
+
+import axios from "axios";
+
 import {
   Table,
   Tag,
@@ -13,13 +19,11 @@ import {
   Select,
   Upload,
   Space,
-} from "antd";
-import {
   Card,
   Typography,
-  Divider,
   Descriptions,
 } from "antd";
+
 import {
   EditOutlined,
   DeleteOutlined,
@@ -27,71 +31,84 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 
+import API_URL from "../../../Config";
+
 const { TextArea } = Input;
 
 const MyProperties = () => {
-  // ==============================
-  // Form Instance
-  // ==============================
+
+  const token = localStorage.getItem("token");
+
   const [form] = Form.useForm();
 
-  // ==============================
-  // Drawer State
-  // ==============================
+  const [loading, setLoading] = useState(true);
+
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // ==============================
-  // View or Edit Mode
-  // false = View
-  // true = Edit
-  // ==============================
   const [editMode, setEditMode] = useState(false);
 
-  // ==============================
-  // Selected Property
-  // ==============================
   const [selectedProperty, setSelectedProperty] = useState(null);
 
-  // ==============================
-  // Property Data
-  // ==============================
-  const [properties, setProperties] = useState([
-    {
-      _id: "1",
-      image: "https://picsum.photos/300/200?random=1",
-      title: "Luxury Villa",
-      city: "Pune",
-      price: 18000000,
-      status: "available",
-      description: "Beautiful luxury villa with swimming pool.",
-      createdAt: "2026-06-24T10:30:00.000Z",
-    },
-    {
-      _id: "2",
-      image: "https://picsum.photos/300/200?random=2",
-      title: "Penthouse",
-      city: "Mumbai",
-      price: 35000000,
-      status: "available",
-      description: "Premium sea-facing penthouse.",
-      createdAt: "2026-06-20T08:15:00.000Z",
-    },
-    {
-      _id: "3",
-      image: "https://picsum.photos/300/200?random=3",
-      title: "2 BHK Flat",
-      city: "Nashik",
-      price: 5500000,
-      status: "sold",
-      description: "Affordable family apartment.",
-      createdAt: "2026-06-15T14:45:00.000Z",
-    },
-  ]);
+  const [properties, setProperties] = useState([]);
 
-  // ==============================
-  // Open Drawer
-  // ==============================
+  //=========================================
+  // Fetch Properties
+  //=========================================
+
+  const fetchProperties = async () => {
+
+    try {
+
+      setLoading(true);
+
+      const res = await axios.get(
+
+        `${API_URL}/api/property/my`,
+
+        {
+
+          headers: {
+
+            Authorization: `Bearer ${token}`,
+
+          },
+
+        }
+
+      );
+
+      setProperties(res.data.properties);
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+      message.error("Unable to fetch properties.");
+
+    }
+
+    finally {
+
+      setLoading(false);
+
+    }
+
+  };
+
+  useEffect(() => {
+
+    fetchProperties();
+
+  }, []);
+
+  //=========================================
+  // View Property
+  //=========================================
+
   const handleView = (record) => {
+
     setSelectedProperty(record);
 
     form.setFieldsValue(record);
@@ -99,12 +116,15 @@ const MyProperties = () => {
     setEditMode(false);
 
     setDrawerOpen(true);
+
   };
 
-  // ==============================
-  // Edit Directly From Table
-  // ==============================
+  //=========================================
+  // Edit Property
+  //=========================================
+
   const handleEdit = (record) => {
+
     setSelectedProperty(record);
 
     form.setFieldsValue(record);
@@ -112,252 +132,617 @@ const MyProperties = () => {
     setEditMode(true);
 
     setDrawerOpen(true);
+
   };
 
-  // ==============================
+  //=========================================
   // Delete Property
-  // ==============================
-  const handleDelete = (record) => {
-    const updated = properties.filter(
-      (item) => item._id !== record._id
-    );
+  //=========================================
 
-    setProperties(updated);
+  const handleDelete = async (record) => {
 
-    message.success("Property deleted successfully.");
+    try {
+
+      await axios.delete(
+
+        `${API_URL}/api/property/${record._id}`,
+
+        {
+
+          headers: {
+
+            Authorization: `Bearer ${token}`,
+
+          },
+
+        }
+
+      );
+
+      message.success("Property deleted successfully.");
+
+      fetchProperties();
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+      message.error("Unable to delete property.");
+
+    }
+
   };
 
-  // ==============================
-  // Save Property
-  // ==============================
+  //=========================================
+  // Update Property
+  //=========================================
+
   const handleSave = async () => {
-    const values = await form.validateFields();
 
-    const updated = properties.map((item) =>
-      item._id === selectedProperty._id
-        ? { ...item, ...values }
-        : item
-    );
+    try {
 
-    setProperties(updated);
+      const values = await form.validateFields();
 
-    message.success("Property updated successfully.");
+      const formData = new FormData();
 
-    setDrawerOpen(false);
+      Object.keys(values).forEach((key) => {
 
-    setEditMode(false);
+        if (
+
+          key !== "images"
+
+          &&
+
+          values[key] !== undefined
+
+        ) {
+
+          formData.append(
+
+            key,
+
+            values[key]
+
+          );
+
+        }
+
+      });
+
+      if (values.images) {
+
+        values.images.forEach((file) => {
+
+          formData.append(
+
+            "images",
+
+            file.originFileObj
+
+          );
+
+        });
+
+      }
+
+      await axios.put(
+
+        `${API_URL}/api/property/${selectedProperty._id}`,
+
+        formData,
+
+        {
+
+          headers: {
+
+            Authorization: `Bearer ${token}`,
+
+            "Content-Type": "multipart/form-data",
+
+          },
+
+        }
+
+      );
+
+      message.success(
+
+        "Property updated successfully."
+
+      );
+
+      fetchProperties();
+
+      setDrawerOpen(false);
+
+      setEditMode(false);
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+      message.error("Unable to update property.");
+
+    }
+
   };
-
-  // ==============================
+  //=========================================
   // Table Columns
-  // ==============================
+  //=========================================
+
   const columns = [
+
     {
-      title: "ID",
-      width: 70,
+
+      title: "#",
+
+      width: 60,
+
       render: (_, __, index) => index + 1,
+
     },
 
     {
+
       title: "Image",
-      dataIndex: "image",
-      width: 90,
-      render: (image) => (
+
+      dataIndex: "images",
+
+      width: 110,
+
+      render: (images) => (
+
         <Image
-          src={image}
-          width={70}
-          height={50}
+
+          src={
+            images?.length > 0
+              ? images[0].url
+              : "https://placehold.co/100x70?text=No+Image"
+          }
+
+          width={80}
+
+          height={60}
+
           preview={false}
+
           style={{
+
             objectFit: "cover",
-            borderRadius: 6,
+
+            borderRadius: 8,
+
           }}
+
         />
+
       ),
+
     },
 
     {
-      title: "Property Name",
+
+      title: "Property",
+
       dataIndex: "title",
-      sorter: (a, b) => a.title.localeCompare(b.title),
+
+      sorter: (a, b) =>
+
+        a.title.localeCompare(b.title),
+
     },
 
     {
+
       title: "City",
+
       dataIndex: "city",
-      sorter: (a, b) => a.city.localeCompare(b.city),
+
+      sorter: (a, b) =>
+
+        a.city.localeCompare(b.city),
+
     },
 
     {
+
       title: "Price",
+
       dataIndex: "price",
-      render: (price) => `₹${price.toLocaleString("en-IN")}`,
-      sorter: (a, b) => a.price - b.price,
+
+      render: (price) =>
+
+        `₹ ${price.toLocaleString("en-IN")}`,
+
     },
 
     {
+
       title: "Status",
+
       dataIndex: "status",
+
       render: (status) => (
-        <Tag color={status === "available" ? "green" : "red"}>
+
+        <Tag
+
+          color={
+            status === "available"
+              ? "green"
+              : "red"
+          }
+
+        >
+
           {status.toUpperCase()}
+
         </Tag>
+
       ),
+
     },
 
     {
+
       title: "Created",
+
       dataIndex: "createdAt",
+
       render: (date) =>
-        new Date(date).toLocaleDateString("en-IN"),
+
+        new Date(date).toLocaleDateString(
+
+          "en-IN",
+
+          {
+
+            day: "2-digit",
+
+            month: "short",
+
+            year: "numeric",
+
+          }
+
+        ),
+
     },
 
     {
+
       title: "Actions",
-      width: 170,
+
+      width: 180,
 
       render: (_, record) => (
+
         <Space>
 
-          {/* View Button */}
           <Button
+
             type="primary"
+
             shape="circle"
+
             icon={<EyeOutlined />}
-            onClick={() => handleView(record)}
+
+            onClick={() =>
+
+              handleView(record)
+
+            }
+
           />
 
-          {/* Edit Button */}
           <Button
+
             shape="circle"
+
             icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
+
+            onClick={() =>
+
+              handleEdit(record)
+
+            }
+
           />
 
-          {/* Delete Button */}
           <Popconfirm
+
             title="Delete Property"
-            description="Are you sure you want to delete this property?"
+
+            description="Are you sure?"
+
             okText="Yes"
+
             cancelText="No"
+
             okType="danger"
-            onConfirm={() => handleDelete(record)}
+
+            onConfirm={() =>
+
+              handleDelete(record)
+
+            }
+
           >
+
             <Button
+
               danger
+
               shape="circle"
+
               icon={<DeleteOutlined />}
+
             />
+
           </Popconfirm>
 
         </Space>
+
       ),
+
     },
+
   ];
+
   return (
+
     <>
-      <h2 style={{ marginBottom: 20 }}>
+
+      <h2
+
+        style={{
+
+          marginBottom: 20,
+
+        }}
+
+      >
+
         My Properties
+
       </h2>
 
       <Table
+
         bordered
+
+        loading={loading}
+
         columns={columns}
+
         dataSource={properties}
+
         rowKey="_id"
+
         pagination={{
+
           pageSize: 10,
+
         }}
+
       />
 
-      {/* ======================================
-    Property Details Drawer
-====================================== */}
-
       <Drawer
-        title={editMode ? "Edit Property" : "Property Details"}
+
+        title={
+
+          editMode
+
+            ? "Edit Property"
+
+            : "Property Details"
+
+        }
+
         open={drawerOpen}
-        width={550}
+
+        width={700}
+
         onClose={() => {
+
           setDrawerOpen(false);
+
           setEditMode(false);
+
         }}
+
       >
 
-        {/* If no property selected */}
-        {!selectedProperty && <p>No Property Selected.</p>}
+        {!selectedProperty && (
 
-        {/* Property Details */}
+          <p>
+
+            No Property Selected
+
+          </p>
+
+        )}
+
         {selectedProperty && (
 
           <>
+            {/* ==============================
+                            Property Images
+                        ============================== */}
 
-            {/* ===========================
-          Property Image
-      =========================== */}
-
-            <Image
-              src={selectedProperty.image}
-              width="100%"
-              height={250}
+            <div
               style={{
-                objectFit: "cover",
-                borderRadius: 10,
+                display: "flex",
+                gap: 10,
+                flexWrap: "wrap",
                 marginBottom: 20,
               }}
-            />
+            >
 
-            {/* ===========================
-          VIEW MODE
-      =========================== */}
+              {selectedProperty.images?.length > 0 ? (
+
+                selectedProperty.images.map((img) => (
+
+                  <Image
+                    key={img._id}
+                    src={img.url}
+                    width={120}
+                    height={90}
+                    style={{
+                      objectFit: "cover",
+                      borderRadius: 8,
+                    }}
+                  />
+
+                ))
+
+              ) : (
+
+                <Image
+                  src="https://placehold.co/120x90?text=No+Image"
+                  width={120}
+                  height={90}
+                />
+
+              )}
+
+            </div>
+
+            {/* ==============================
+                            VIEW MODE
+                        ============================== */}
 
             {!editMode && (
-              <Card bordered={false}>
-                <Typography.Title level={3} style={{ marginBottom: 10 }}>
+
+              <Card>
+
+                <Typography.Title level={3}>
+
                   {selectedProperty.title}
+
                 </Typography.Title>
 
                 <Tag
-                  color={selectedProperty.status === "available" ? "green" : "red"}
-                  style={{ marginBottom: 20 }}
+                  color={
+                    selectedProperty.status === "available"
+                      ? "green"
+                      : "red"
+                  }
                 >
+
                   {selectedProperty.status.toUpperCase()}
+
                 </Tag>
 
-                <Descriptions column={1} bordered size="small">
+                <Descriptions
+                  bordered
+                  column={1}
+                  style={{
+                    marginTop: 20,
+                  }}
+                >
+
                   <Descriptions.Item label="City">
+
                     {selectedProperty.city}
+
+                  </Descriptions.Item>
+
+                  <Descriptions.Item label="Area">
+
+                    {selectedProperty.area}
+
+                  </Descriptions.Item>
+
+                  <Descriptions.Item label="Pincode">
+
+                    {selectedProperty.pincode}
+
+                  </Descriptions.Item>
+
+                  <Descriptions.Item label="Property Type">
+
+                    {selectedProperty.propertyType}
+
+                  </Descriptions.Item>
+
+                  <Descriptions.Item label="BHK">
+
+                    {selectedProperty.bhk}
+
+                  </Descriptions.Item>
+
+                  <Descriptions.Item label="Bathrooms">
+
+                    {selectedProperty.bathrooms}
+
+                  </Descriptions.Item>
+
+                  <Descriptions.Item label="Area Size">
+
+                    {selectedProperty.areaSize}
+
+                  </Descriptions.Item>
+
+                  <Descriptions.Item label="Furnishing">
+
+                    {selectedProperty.furnishing}
+
                   </Descriptions.Item>
 
                   <Descriptions.Item label="Price">
-                    ₹{selectedProperty.price.toLocaleString("en-IN")}
+
+                    ₹ {selectedProperty.price?.toLocaleString("en-IN")}
+
                   </Descriptions.Item>
 
-                  <Descriptions.Item label="Created">
-                    {new Date(selectedProperty.createdAt).toLocaleDateString("en-IN")}
+                  <Descriptions.Item label="Amenities">
+
+                    {selectedProperty.amenities?.join(", ")}
+
                   </Descriptions.Item>
 
                   <Descriptions.Item label="Description">
+
                     {selectedProperty.description}
+
                   </Descriptions.Item>
+
                 </Descriptions>
 
                 <Button
-                  type="primary"
-                  block
-                  size="large"
-                  icon={<EditOutlined />}
-                  style={{ marginTop: 20 }}
-                  onClick={() => setEditMode(true)}
-                >
-                  Edit Property
-                </Button>
-              </Card>
-            )}
 
-            {/* ===========================
-          EDIT MODE
-      =========================== */}
+                  type="primary"
+
+                  size="large"
+
+                  block
+
+                  icon={<EditOutlined />}
+
+                  style={{
+                    marginTop: 20,
+                  }}
+
+                  onClick={() =>
+                    setEditMode(true)
+                  }
+
+                >
+
+                  Edit Property
+
+                </Button>
+
+              </Card>
+
+            )}
+            {/* ==============================
+                            EDIT MODE
+                        ============================== */}
 
             {editMode && (
 
@@ -367,7 +752,7 @@ const MyProperties = () => {
               >
 
                 <Form.Item
-                  label="Property Name"
+                  label="Property Title"
                   name="title"
                   rules={[
                     {
@@ -379,10 +764,10 @@ const MyProperties = () => {
                 </Form.Item>
 
                 <Form.Item
-                  label="City"
-                  name="city"
+                  label="Description"
+                  name="description"
                 >
-                  <Input />
+                  <TextArea rows={4} />
                 </Form.Item>
 
                 <Form.Item
@@ -394,6 +779,52 @@ const MyProperties = () => {
                       width: "100%",
                     }}
                   />
+                </Form.Item>
+
+                <Form.Item
+                  label="City"
+                  name="city"
+                >
+                  <Input />
+                </Form.Item>
+
+                <Form.Item
+                  label="Area"
+                  name="area"
+                >
+                  <Input />
+                </Form.Item>
+
+                <Form.Item
+                  label="Pincode"
+                  name="pincode"
+                >
+                  <Input />
+                </Form.Item>
+
+                <Form.Item
+                  label="Property Type"
+                  name="propertyType"
+                >
+                  <Select>
+
+                    <Select.Option value="flat">
+                      Flat
+                    </Select.Option>
+
+                    <Select.Option value="apartment">
+                      Apartment
+                    </Select.Option>
+
+                    <Select.Option value="villa">
+                      Villa
+                    </Select.Option>
+
+                    <Select.Option value="house">
+                      House
+                    </Select.Option>
+
+                  </Select>
                 </Form.Item>
 
                 <Form.Item
@@ -414,25 +845,36 @@ const MyProperties = () => {
                 </Form.Item>
 
                 <Form.Item
-                  label="Description"
-                  name="description"
+                  label="Property Images"
+                  name="images"
+                  valuePropName="fileList"
+                  getValueFromEvent={(e) => {
+
+                    if (Array.isArray(e)) {
+
+                      return e;
+
+                    }
+
+                    return e?.fileList;
+
+                  }}
                 >
-                  <TextArea rows={5} />
-                </Form.Item>
-
-                {/* Upload */}
-
-                <Form.Item label="Property Image">
 
                   <Upload
+                    multiple
                     beforeUpload={() => false}
-                    maxCount={1}
+                    listType="picture-card"
                   >
+
                     <Button
                       icon={<UploadOutlined />}
                     >
-                      Upload Image
+
+                      Upload Images
+
                     </Button>
+
                   </Upload>
 
                 </Form.Item>
@@ -440,23 +882,34 @@ const MyProperties = () => {
                 <Space
                   style={{
                     width: "100%",
-                    justifyContent: "end",
+                    justifyContent: "flex-end",
                   }}
                 >
 
                   <Button
+
                     onClick={() => {
+
                       setEditMode(false);
+
                     }}
+
                   >
+
                     Cancel
+
                   </Button>
 
                   <Button
+
                     type="primary"
+
                     onClick={handleSave}
+
                   >
+
                     Save Changes
+
                   </Button>
 
                 </Space>
@@ -470,9 +923,11 @@ const MyProperties = () => {
         )}
 
       </Drawer>
+
     </>
 
   );
+
 };
 
 export default MyProperties;

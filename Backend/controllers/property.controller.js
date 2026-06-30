@@ -3,7 +3,8 @@ import Inquiry from "../models/inquiry.model.js";
 import jwt from "jsonwebtoken";
 import User from "../models/usermodel.js";
 import Chat from "../models/chat.model.js";
-
+import cloudinary from "../config/cloudinary.js";
+import { uploadToCloudinary } from "../utils/uploadToCloudinary.js";
 //Add a Property
 
 
@@ -29,9 +30,15 @@ export const addProperty = async (req, res) => {
         let imageUrls = [];
 
         if (req.files && req.files.length > 0) {
-            for (let file of req.files) {
-                const result = await uploadToCloudinary(file.buffer);
-                imageUrls.push(result.secure_url);
+            for (const file of req.files) {
+                const result = await uploadToCloudinary(
+                    file.buffer,
+                    "properties"
+                );
+                imageUrls.push({
+                    url: result.secure_url,
+                    public_id: result.public_id,
+                });
             }
         }
 
@@ -159,7 +166,12 @@ export const updateProperty = async (req, res) => {
             let newImages = [];
             for (let file of req.files) {
                 const result = await uploadToCloudinary(file.buffer, "properties");
-                newImages.push(result.secure_url);
+                newImages.push(
+                    {
+                        url: result.secure_url,
+                        public_id: result.public_id,
+                    }
+                );
             }
             property.images = [...property.images, ...newImages];
         }
@@ -200,9 +212,10 @@ export const deleteProperty = async (req, res) => {
 
 
         //delete the image from cloudinary
-        for (let imageUrl of property.images) {
-            const publicId = imageUrl.split("/").pop().split(".")[0];
-            await cloudinary.uploader.destroy("properties/" + publicId);
+        for (const image of property.images) {
+            await cloudinary.uploader.destroy(
+                image.public_id
+            );
         }
         await property.deleteOne();
         res.json({
@@ -551,3 +564,74 @@ export const getPropertyCounts = async (req, res) => {
         })
     }
 }
+
+
+// ==========================================
+// Delete Single Property Image
+// ==========================================
+
+export const deletePropertyImage = async (req, res) => {
+
+    try {
+
+        const { propertyId, imageId } = req.params;
+
+        const property = await Property.findById(propertyId);
+
+        if (!property) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Property not found",
+            });
+
+        }
+
+        // Check owner
+        if (property.seller.toString() !== req.user._id.toString()) {
+
+            return res.status(403).json({
+                success: false,
+                message: "Not Authorized",
+            });
+
+        }
+
+        // Find image
+        const image = property.images.id(imageId);
+
+        if (!image) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Image not found",
+            });
+
+        }
+
+        // Delete from Cloudinary
+        await cloudinary.uploader.destroy(image.public_id);
+
+        // Remove from MongoDB
+        property.images.pull(imageId);
+
+        await property.save();
+
+        res.json({
+            success: true,
+            message: "Image deleted successfully",
+            property,
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+
+    }
+
+};

@@ -24,8 +24,12 @@
     padding: 25px;
 
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-
+    box-shadow: var(--shadow);
+    &:hover {
+      cursor: pointer;
+      border: 1px solid var(--accent);
+      box-shadow: var(--shadow);
+    }
     .icon {
       font-size: 24px;
       color: var(--accent);

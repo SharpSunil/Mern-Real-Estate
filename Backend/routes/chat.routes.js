@@ -4,7 +4,9 @@ import { protect } from "../middlewares/auth.middleware.js";
 import Chat from "../models/Chat.model.js";
 import Inquiry from "../models/inquiry.model.js";
 const chatRouter = express.Router();
-
+import upload from "../middlewares/upload.middleware.js";
+import { uploadToCloudinary } from "../utils/uploadToCloudinary.js";
+import cloudinary from "../config/cloudinary.js";
 
 chatRouter.use(protect);
 
@@ -83,131 +85,168 @@ chatRouter.post("/start", async (req, res) => {
 // ==========================
 // SEND MESSAGE
 // ==========================
-chatRouter.post("/send", async (req, res) => {
-    try {
+chatRouter.post(
+    "/send",
+    upload.single("image"),
+    async (req, res) => {
+        try {
 
-        const { chatId, text, image } = req.body;
+            const { chatId, text } = req.body;
 
-        if (!chatId) {
-            return res.status(400).json({
-                success: false,
-                message: "Chat ID is required",
-            });
-        }
+            let image = {
+                url: "",
+                public_id: "",
+            };
 
-        if (!text && !image) {
-            return res.status(400).json({
-                success: false,
-                message: "Message cannot be empty",
-            });
-        }
+            if (!chatId) {
 
-        const userId = req.user._id.toString();
+                return res.status(400).json({
+                    success: false,
+                    message: "Chat ID is required",
+                });
 
-        const chat = await Chat.findById(chatId);
+            }
 
-        if (!chat) {
-            return res.status(404).json({
-                success: false,
-                message: "Chat not found",
-            });
-        }
+            if (!text && !req.file) {
 
-        // Verify user belongs to this chat
-        if (
-            chat.buyer.toString() !== userId &&
-            chat.seller.toString() !== userId
-        ) {
-            return res.status(403).json({
-                success: false,
-                message: "Not authorized",
-            });
-        }
+                return res.status(400).json({
+                    success: false,
+                    message: "Message cannot be empty",
+                });
 
-        const newMessage = {
-            sender: req.user._id,
-            text: text || "",
-            image: image || "",
-        };
+            }
 
-        // Save Message
-        chat.messages.push(newMessage);
+            const userId = req.user._id.toString();
 
-        // Sidebar Preview
-        chat.lastMessage = text
-            ? text
-            : "📷 Image";
+            const chat = await Chat.findById(chatId);
 
-        chat.lastMessageSender = req.user._id;
+            if (!chat) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Chat not found",
+                });
+            }
 
-        // Unread Counter
-        if (req.user.role === "buyer") {
+            // Verify user belongs to this chat
+            if (
+                chat.buyer.toString() !== userId &&
+                chat.seller.toString() !== userId
+            ) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Not authorized",
+                });
+            }
 
-            chat.unreadForSeller += 1;
+            if (req.file) {
 
-        } else {
+                const result = await uploadToCloudinary(
+                    req.file.buffer,
+                    "chat-images"
+                );
 
-            chat.unreadForBuyer += 1;
-        }
+                image = {
+                    url: result.secure_url,
+                    public_id: result.public_id,
+                };
 
-        // updatedAt automatically updates because timestamps:true
+            }
 
-        // updatedAt automatically updates because timestamps:true
+            const newMessage = {
 
-        await chat.save();
+                sender: req.user._id,
 
-        // ======================================
-        // Update Inquiry Status
-        // ======================================
+                text: text || "",
 
-        if (req.user.role === "seller") {
+                image,
 
-            await Inquiry.findOneAndUpdate(
+            };
 
-                {
-                    property: chat.property,
-                    buyer: chat.buyer,
-                    seller: chat.seller,
-                    status: "pending",
-                },
+            // Save Message
+            chat.messages.push(newMessage);
 
-                {
-                    $set: {
-                        status: "replied",
-                        isRead: true,
-                        chat: chat._id,
+            // Sidebar Preview
+            if (text) {
+
+                chat.lastMessage = text;
+
+            }
+            else if (req.file) {
+
+                chat.lastMessage = "📷 Image";
+
+            }
+
+            chat.lastMessageSender = req.user._id;
+
+            // Unread Counter
+            if (req.user.role === "buyer") {
+
+                chat.unreadForSeller += 1;
+
+            } else {
+
+                chat.unreadForBuyer += 1;
+            }
+
+            // updatedAt automatically updates because timestamps:true
+
+            // updatedAt automatically updates because timestamps:true
+
+            await chat.save();
+
+            // ======================================
+            // Update Inquiry Status
+            // ======================================
+
+            if (req.user.role === "seller") {
+
+                await Inquiry.findOneAndUpdate(
+
+                    {
+                        property: chat.property,
+                        buyer: chat.buyer,
+                        seller: chat.seller,
+                        status: "pending",
                     },
-                }
 
-            );
+                    {
+                        $set: {
+                            status: "replied",
+                            isRead: true,
+                            chat: chat._id,
+                        },
+                    }
 
+                );
+
+            }
+
+            // Return populated chat
+            const updatedChat = await Chat.findById(chat._id)
+                .populate("buyer", "name email profilePic")
+                .populate("seller", "name email profilePic")
+                .populate("property", "title price images")
+                .populate("messages.sender", "name profilePic")
+                .populate("lastMessageSender", "name");
+
+            res.status(200).json({
+                success: true,
+                message: "Message sent successfully",
+                chat: updatedChat,
+            });
+
+        } catch (error) {
+
+            console.error("Send Message Error:", error);
+
+            res.status(500).json({
+                success: false,
+                message: "Error sending message",
+                error: error.message,
+            });
         }
-
-        // Return populated chat
-        const updatedChat = await Chat.findById(chat._id)
-            .populate("buyer", "name email profilePic")
-            .populate("seller", "name email profilePic")
-            .populate("property", "title price images")
-            .populate("messages.sender", "name profilePic")
-            .populate("lastMessageSender", "name");
-
-        res.status(200).json({
-            success: true,
-            message: "Message sent successfully",
-            chat: updatedChat,
-        });
-
-    } catch (error) {
-
-        console.error("Send Message Error:", error);
-
-        res.status(500).json({
-            success: false,
-            message: "Error sending message",
-            error: error.message,
-        });
-    }
-});
+    });
 
 // ==========================
 // GET ALL CHATS OF LOGGED IN USER
@@ -410,9 +449,30 @@ chatRouter.delete("/:chatId/message/:messageId", async (req, res) => {
         // Soft Delete
         message.text = "This message was deleted.";
 
-        message.image = "";
+        if (message.image?.public_id) {
+
+            await cloudinary.uploader.destroy(
+                message.image.public_id
+            );
+
+        }
+
+        message.image = {
+
+            url: "",
+
+            public_id: "",
+
+        };
 
         message.isDeleted = true;
+        const lastMsg = chat.messages[chat.messages.length - 1];
+
+        if (lastMsg && lastMsg._id.toString() === message._id.toString()) {
+
+            chat.lastMessage = "This message was deleted.";
+
+        }
 
         await chat.save();
 

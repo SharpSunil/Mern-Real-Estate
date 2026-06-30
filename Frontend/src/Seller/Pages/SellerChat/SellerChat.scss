@@ -168,47 +168,103 @@
           }
         }
       }
-      .chat-footer {
-        height: 80px;
-        background: #fff;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        padding: 0px 20px;
+     .chat-footer {
+  background: #fff;
+  border-radius: 10px;
+  padding: 15px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 
-        input {
-          flex: 1;
+  .image-preview {
+    position: relative;
+    width: 120px;
 
-          height: 48px;
+    img {
+      width: 120px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
 
-          border: 1px solid rgb(219, 217, 217);
+    .remove-image {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 22px;
+      height: 22px;
+      border: none;
+      border-radius: 50%;
+      background: crimson;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      font-size: 14px;
+    }
+  }
 
-          border-radius: 10px;
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 
-          padding: 0 15px;
+    .image-upload {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 22px;
+      transition: 0.3s;
 
-          &:focus {
-            outline: none;
-
-            border-color: var(--accent);
-          }
-        }
-
-        button {
-          padding: 10px 40px;
-
-          background: var(--accent);
-
-          color: #fff;
-
-          border: none;
-
-          border-radius: 10px;
-          font-size: 16px;
-          cursor: pointer;
-        }
+      &:hover {
+        background: var(--accent);
+        color: #fff;
       }
+
+      input {
+        display: none;
+      }
+    }
+
+    input[type="text"] {
+      flex: 1;
+      height: 48px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 0 15px;
+      font-size: 15px;
+
+      &:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+    }
+
+    button {
+      min-width: 120px;
+      height: 48px;
+      border: none;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.3s;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+  }
+}
     }
   }
 }

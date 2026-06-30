@@ -11,17 +11,69 @@ import {
   Card,
   Row,
   Col,
+  message,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import axios from "axios";
+import API_URL from "../../../Config";
 
 const { TextArea } = Input;
 
 const AddProperty = () => {
   const [form] = Form.useForm();
+  const token = localStorage.getItem("token");
+  const onFinish = async (values) => {
+    try {
+      const formData = new FormData();
+      formData.append("title", values.title);
+      formData.append("description", values.description);
+      formData.append("price", values.price);
+      formData.append("city", values.city);
+      formData.append("area", values.area);
+      formData.append("pincode", values.pincode);
+      formData.append("propertyType", values.propertyType);
+      formData.append("status", values.status);
+      formData.append("bhk", values.bhk);
+      formData.append("bathrooms", values.bathrooms);
+      formData.append("areaSize", values.areaSize);
+      formData.append("furnishing", values.furnishing);
 
-  const onFinish = (values) => {
-    console.log(values);
-  };
+      if (values.amenities) {
+        values.amenities.forEach((item) => {
+          formData.append("amenities", item);
+        })
+      }
+
+      if (values.images) {
+
+        values.images.forEach((file) => {
+
+          formData.append(
+            "images",
+            file.originFileObj
+          );
+
+        });
+
+
+      }
+
+      const res = await axios.post(`${API_URL}/api/property`, formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          }
+        }
+      )
+      message.success(res.data.message);
+      form.resetFields();
+    } catch (error) {
+      console.log(error);
+      message.error("Opps! Something went wrong. Failed to add property");
+
+    }
+  }
 
   return (
     <>
@@ -131,6 +183,7 @@ const AddProperty = () => {
                 <Form.Item
                   label="City"
                   name="city"
+                  placeholder="Pune"
                 >
                   <Input />
                 </Form.Item>
@@ -138,8 +191,9 @@ const AddProperty = () => {
 
               <Col span={8}>
                 <Form.Item
-                  label="Area"
+                  label="Area(Sub City)"
                   name="area"
+                  placeholder="eg. Baner"
                 >
                   <Input />
                 </Form.Item>
@@ -216,7 +270,7 @@ const AddProperty = () => {
                       },
                       {
                         label: "Fully Furnished",
-                        value: "fully-furnished",
+                        value: "furnished",
                       },
                     ]}
                   />
@@ -268,10 +322,25 @@ const AddProperty = () => {
           {/* ================= Images ================= */}
 
           <Card title="Property Images" style={{ marginBottom: 20 }}>
-            <Form.Item name="images">
+            <Form.Item
+              name="images"
+              valuePropName="fileList"
+              getValueFromEvent={(e) => {
+
+                if (Array.isArray(e)) {
+
+                  return e;
+
+                }
+
+                return e?.fileList;
+
+              }}
+            >
               <Upload
                 listType="picture-card"
                 multiple
+                maxCount={10}
                 beforeUpload={() => false}
               >
                 <Button icon={<UploadOutlined />}>
