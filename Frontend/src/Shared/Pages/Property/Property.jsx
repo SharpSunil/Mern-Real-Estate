@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Breadcrumbs from '../../../Components/Breadcrumbs/Breadcrumbs'
 import "./property.scss"
-import { FiMapPin } from "react-icons/fi";
-import { FaCompress, FaRegHeart, FaUsers } from "react-icons/fa6";
+import { FiMapPin } from "react-icons/fi"; import { FaCompress, FaRegHeart, FaHeart, FaUsers, } from "react-icons/fa6";
 import image from "../../../assets/realestate.jpg";
 import { PiSealCheckFill } from "react-icons/pi";
 import { GiFlatPlatform } from "react-icons/gi";
@@ -20,9 +19,12 @@ const Property = () => {
 
     const [showInquiry, setShowInquiry] = useState(false);
 
+    const [isWishlisted, setIsWishlisted] = useState(false);
+
     const [inquiryMessage, setInquiryMessage] = useState("");
 
     const [sendingInquiry, setSendingInquiry] = useState(false);
+
     const handleSendInquiry = async () => {
 
         if (!inquiryMessage.trim()) {
@@ -99,6 +101,15 @@ const Property = () => {
 
         fetchProperty();
     }, [id]);
+    useEffect(() => {
+
+        if (property) {
+
+            checkWishlist();
+
+        }
+
+    }, [property]);
 
     if (loading) {
         return <h2>Loading Property...</h2>;
@@ -107,6 +118,11 @@ const Property = () => {
     if (!property) {
         return <h2>Property Not Found</h2>;
     }
+    const mainImage = property?.images?.[0]?.url || image;
+    const secondImage = property?.images?.[1]?.url || mainImage;
+    const thirdImage = property?.images?.[2]?.url || mainImage;
+
+
     const user = JSON.parse(localStorage.getItem("user"));
     console.log(property.seller, "fdslkjklsdflkjsdfkljsdjkfl klsdfjklsdjf sdflkjklsdjf");
 
@@ -134,7 +150,12 @@ const Property = () => {
 
             console.log("Chat Created:", res.data);
 
-            navigate(`/buyer/chat/${res.data._id}`);
+            navigate("/buyer-dashboard", {
+                state: {
+                    activeTab: "chat",
+                    selectedChatId: res.data._id,
+                },
+            });
         } catch (error) {
             console.error(
                 "Error starting chat:",
@@ -142,6 +163,126 @@ const Property = () => {
             );
         }
     };
+
+    const handleWishlist = async () => {
+
+        try {
+
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+
+                navigate("/login");
+
+                return;
+
+            }
+
+            if (isWishlisted) {
+
+                await axios.delete(
+
+                    `${API_URL}/api/wishlist/${property._id}`,
+
+                    {
+
+                        headers: {
+
+                            Authorization: `Bearer ${token}`,
+
+                        },
+
+                    }
+
+                );
+
+                setIsWishlisted(false);
+
+            }
+
+            else {
+
+                await axios.post(
+
+                    `${API_URL}/api/wishlist/${property._id}`,
+
+                    {},
+
+                    {
+
+                        headers: {
+
+                            Authorization: `Bearer ${token}`,
+
+                        },
+
+                    }
+
+                );
+
+                setIsWishlisted(true);
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.log(error);
+
+        }
+
+    };
+
+    const checkWishlist = async () => {
+
+        try {
+
+            const token = localStorage.getItem("token");
+
+            if (!token || !property) return;
+
+            const res = await axios.get(
+
+                `${API_URL}/api/wishlist`,
+
+                {
+
+                    headers: {
+
+                        Authorization: `Bearer ${token}`,
+
+                    },
+
+                }
+
+            );
+
+            const wishlist = res.data.data;
+
+            const exists = wishlist.some((item) => {
+
+                const propertyId =
+                    item.property?._id?.toString() ||
+                    item.property?.toString();
+
+                return propertyId === property._id.toString();
+
+            });
+
+            setIsWishlisted(exists);
+
+        }
+
+        catch (error) {
+
+            console.log(error);
+
+        }
+
+    };
+
+
 
     return (
         <>
@@ -160,7 +301,7 @@ const Property = () => {
                         <div
                             className="left-img"
                             style={{
-                                backgroundImage: `url(${property.images?.[0] || image})`,
+                                backgroundImage: `url(${mainImage})`,
                             }}
                         />
 
@@ -168,14 +309,14 @@ const Property = () => {
                             <div
                                 className="right-img1"
                                 style={{
-                                    backgroundImage: `url(${property.images?.[1] || property.images?.[0] || image})`,
+                                    backgroundImage: `url(${secondImage})`,
                                 }}
                             />
 
                             <div
                                 className="right-img2"
                                 style={{
-                                    backgroundImage: `url(${property.images?.[2] || property.images?.[0] || image})`,
+                                    backgroundImage: `url(${thirdImage})`,
                                 }}
                             />
                         </div>
@@ -187,7 +328,34 @@ const Property = () => {
                             <div className="sec-indicator">{property.status?.toUpperCase()}</div>
                             <div className="heading">{property.title} </div>
                             <div className="address"><FiMapPin /><span>{property.area}, {property.city}</span></div>
-                            <div className="like"><FaRegHeart /></div>
+                            <div
+                                className="like"
+                                onClick={handleWishlist}
+                            >
+
+                                {
+
+                                    isWishlisted ?
+
+                                        (
+
+                                            <FaHeart
+                                                color="red"
+                                            />
+
+                                        )
+
+                                        :
+
+                                        (
+
+                                            <FaRegHeart />
+
+                                        )
+
+                                }
+
+                            </div>
                             <div className="main-card-box">
                                 <div className="card"><div className="icon"><IoHomeOutline /></div>
                                     <div className="number">{property.bhk}</div>

@@ -14,7 +14,8 @@ import AddProperty from "../AddProperty/AddProperty";
 import SellerChat from "../SellerChat/SellerChat";
 import Inquiry from "../Inquiries/Inquiry";
 import SellerProfile from "../Profile/SellerProfile";
-
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 const SellerDashboard = () => {
 
     const [activeTab, setActiveTab] = useState("dashboard");
@@ -24,7 +25,65 @@ const SellerDashboard = () => {
     const [user, setUser] = useState(
         JSON.parse(localStorage.getItem("user"))
     );
+    const navigate = useNavigate();
+    // ---------------Logout----------------------//
+    const handleLogout = () => {
 
+        toast.warn(
+            ({ closeToast }) => (
+                <div>
+                    <p>Are you sure you want to logout?</p>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "10px",
+                            marginTop: "10px",
+                        }}
+                    >
+                        <button
+                            onClick={() => {
+                                closeToast();
+                            }}
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            style={{
+                                background: "crimson",
+                                color: "#fff",
+                                border: "none",
+                                padding: "6px 12px",
+                                cursor: "pointer",
+                            }}
+                            onClick={() => {
+                                localStorage.removeItem("token");
+                                localStorage.removeItem("user");
+
+                                closeToast();
+
+                                toast.success("Logged out successfully!");
+
+                                setTimeout(() => {
+                                    navigate("/login", { replace: true });
+                                }, 1000);
+                            }}
+                        >
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            ),
+            {
+                autoClose: false,
+                closeOnClick: false,
+                closeButton: false,
+                draggable: false,
+            }
+        );
+
+    };
     return (
 
         <div className="seller-parent parent">
@@ -116,7 +175,7 @@ const SellerDashboard = () => {
 
                     </ul>
 
-                    <div className="last">
+                    <div className="last" onClick={() => handleLogout()}>
 
                         <IoLogOutOutline />
 
@@ -170,7 +229,7 @@ const SellerDashboard = () => {
 
             </div>
 
-        </div>
+        </div >
 
     );
 

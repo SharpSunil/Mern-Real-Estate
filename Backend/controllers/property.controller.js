@@ -6,7 +6,7 @@ import Chat from "../models/chat.model.js";
 import cloudinary from "../config/cloudinary.js";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary.js";
 //Add a Property
-
+import Wishlist from "../models/wishlist.model.js"
 
 export const addProperty = async (req, res) => {
     try {
@@ -630,6 +630,98 @@ export const deletePropertyImage = async (req, res) => {
         res.status(500).json({
             success: false,
             message: error.message,
+        });
+
+    }
+
+};
+
+export const getBuyerDashboard = async (req, res) => {
+
+    try {
+
+        const buyerId = req.user._id;
+
+        // ===============================
+        // Wishlist Count
+        // ===============================
+
+        const wishlistCount = await Wishlist.countDocuments({
+            user: buyerId,
+        });
+
+        // ===============================
+        // Chat Count
+        // ===============================
+
+        const chats = await Chat.find({
+            buyer: buyerId,
+        });
+
+        const totalChats = chats.length;
+
+        let unreadChats = 0;
+
+        chats.forEach((chat) => {
+
+            unreadChats += chat.unreadForBuyer;
+
+        });
+
+        // ===============================
+        // Inquiry Count
+        // ===============================
+
+        const inquiryCount = await Inquiry.countDocuments({
+            buyer: buyerId,
+        });
+
+        // ===============================
+        // Recent Activity
+        // ===============================
+
+        const recentActivity = await Inquiry.find({
+            buyer: buyerId,
+        })
+            .populate(
+                "property",
+                "title"
+            )
+            .sort({
+                createdAt: -1,
+            })
+            .limit(5);
+
+        res.status(200).json({
+
+            success: true,
+
+            stats: {
+
+                wishlistCount,
+
+                totalChats,
+
+                unreadChats,
+
+                inquiryCount,
+
+                recentActivity,
+
+            },
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            success: false,
+
+            message: error.message,
+
         });
 
     }

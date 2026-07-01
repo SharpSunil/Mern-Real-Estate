@@ -13,7 +13,7 @@ import { FaFilter } from "react-icons/fa";
 const Properties = () => {
     const [activeView, setActiveView] = useState("grid");
     const [showSidebar, setShowSidebar] = useState(false);
-
+    const [wishlistIds, setWishlistIds] = useState([]);
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -84,10 +84,7 @@ const Properties = () => {
         }
     };
 
-    // Initial Load
-    useEffect(() => {
-        fetchProperties();
-    }, []);
+
 
     // Real Time Filtering
     useEffect(() => {
@@ -115,7 +112,122 @@ const Properties = () => {
             sort: e.target.value,
         });
     };
+    const fetchWishlist = async () => {
 
+        try {
+
+            const token = localStorage.getItem("token");
+
+            if (!token) return;
+
+            const user = JSON.parse(localStorage.getItem("user"));
+
+            if (user?.role !== "buyer") return;
+
+            const res = await axios.get(
+
+                `${API_URL}/api/wishlist`,
+
+                {
+
+                    headers: {
+
+                        Authorization: `Bearer ${token}`,
+
+                    },
+
+                }
+
+            );
+
+            const ids = res.data.data.map(
+
+                (item) => item.property._id
+
+            );
+
+            setWishlistIds(ids);
+
+        }
+
+        catch (error) {
+
+            console.log(error);
+
+        }
+
+    };
+    const toggleWishlist = async (propertyId) => {
+
+        try {
+
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+
+                return;
+
+            }
+
+            if (wishlistIds.includes(propertyId)) {
+
+                await axios.delete(
+
+                    `${API_URL}/api/wishlist/${propertyId}`,
+
+                    {
+
+                        headers: {
+
+                            Authorization: `Bearer ${token}`,
+
+                        },
+
+                    }
+
+                );
+
+            } else {
+
+                await axios.post(
+
+                    `${API_URL}/api/wishlist/${propertyId}`,
+
+                    {},
+
+                    {
+
+                        headers: {
+
+                            Authorization: `Bearer ${token}`,
+
+                        },
+
+                    }
+
+                );
+
+            }
+
+            fetchWishlist();
+
+        }
+
+        catch (error) {
+
+            console.log(error);
+
+        }
+
+    };
+    // Initial Load
+    useEffect(() => {
+
+        fetchProperties();
+
+        fetchWishlist();
+
+    }, []);
     return (
         <>
             {showSidebar && (
@@ -133,8 +245,8 @@ const Properties = () => {
                     {/* Sidebar */}
                     <div
                         className={`left-sidebar ${showSidebar
-                                ? "show"
-                                : ""
+                            ? "show"
+                            : ""
                             }`}
                     >
                         <div
@@ -186,9 +298,9 @@ const Properties = () => {
                                 <div className="first">
                                     <div
                                         className={`icon-box ${activeView ===
-                                                "grid"
-                                                ? "active"
-                                                : ""
+                                            "grid"
+                                            ? "active"
+                                            : ""
                                             }`}
                                         onClick={() =>
                                             setActiveView(
@@ -202,9 +314,9 @@ const Properties = () => {
                                     {/* List View */}
                                     <div
                                         className={`icon-box ${activeView ===
-                                                "list"
-                                                ? "active"
-                                                : ""
+                                            "list"
+                                            ? "active"
+                                            : ""
                                             }`}
                                         onClick={() =>
                                             setActiveView(
@@ -262,15 +374,11 @@ const Properties = () => {
                                         property
                                     ) => (
                                         <PropertyCard
-                                            key={
-                                                property._id
-                                            }
-                                            property={
-                                                property
-                                            }
-                                            view={
-                                                activeView
-                                            }
+                                            key={property._id}
+                                            property={property}
+                                            view={activeView}
+                                            isWishlisted={wishlistIds.includes(property._id)}
+                                            onWishlistClick={toggleWishlist}
                                         />
                                     )
                                 )

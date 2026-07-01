@@ -5,7 +5,6 @@ import "./App.scss";
 import MainLayout from "./Shared/Layout/MainLayout";
 
 import SharedRoutes from "./Shared/Routes/SharedRoutes";
-import BuyerRoutes from "./Buyer/BuyerRoutes/BuyerRoutes";
 
 
 
@@ -18,14 +17,7 @@ function App() {
         <Route path="/*" element={<SharedRoutes />} />
       </Route>
 
-      {/* Buyer */}
-      <Route path="/buyer/*" element={<BuyerRoutes />} />
-
-      {/* Seller */}
-      {/* <Route path="/seller/*" element={<SellerRoutes />} /> */}
-
-      {/* Admin */}
-      {/* <Route path="/admin/*" element={<AdminRoutes />} /> */}
+    
 
     </Routes>
   );

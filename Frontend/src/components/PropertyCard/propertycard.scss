@@ -119,7 +119,7 @@
         cursor: pointer;
         transition: var(--trans);
 
-        &:hover {
+        &:hover, &.active {
           color: rgb(243, 60, 91);
         }
       }

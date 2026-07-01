@@ -9,7 +9,7 @@ import { useAuth } from "../../context/AuthContext";
 const Navbar = () => {
   const [open, setOpen] = useState(false);
 
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   return (
     <>
@@ -49,9 +49,7 @@ const Navbar = () => {
               {user?.role === "buyer" && (
                 <>
                   <li>
-                    <Link to="/my-favourites">
-                      My Favourites
-                    </Link>
+                    <Link to="/buyer-dashboard">Dashboard</Link>
                   </li>
                 </>
               )}
@@ -65,11 +63,7 @@ const Navbar = () => {
                     </Link>
                   </li>
 
-                  <li>
-                    <Link to="/add-property">
-                      Add Property
-                    </Link>
-                  </li>
+
                 </>
               )}
 
@@ -82,17 +76,7 @@ const Navbar = () => {
                 </li>
               )}
 
-              {/* Logout */}
-              {user && (
-                <li>
-                  <button
-                    className="logout-btn"
-                    onClick={logout}
-                  >
-                    Logout
-                  </button>
-                </li>
-              )}
+
             </ul>
           </div>
 
@@ -182,20 +166,7 @@ const Navbar = () => {
                   </li>
                 )}
 
-                {/* Logout */}
-                {user && (
-                  <li>
-                    <button
-                      className="logout-btn"
-                      onClick={() => {
-                        logout();
-                        setOpen(false);
-                      }}
-                    >
-                      Logout
-                    </button>
-                  </li>
-                )}
+
               </ul>
             </div>
 

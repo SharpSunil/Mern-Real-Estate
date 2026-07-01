@@ -8,6 +8,7 @@ import Register from "../Pages/Register/Register";
 import VerifyEmail from "../Pages/Emailverify/VerifyEmail";
 import ForgotPassword from "../Pages/Forgot-Password/ForgotPassword";
 import SellerDashboard from "../../Seller/Pages/SellerDashboard/SellerDashboard";
+import BuyerDashboard from "../../Buyer/Pages/Dashboard/BuyerDashboard";
 
 
 
@@ -47,9 +48,19 @@ const SharedRoutes = () => {
         element={<ForgotPassword />}
       />
 
-      <Route path="/seller-dashboard"
-       element={<SellerDashboard /> } />
-       </Routes>
+      // Seller Dashboard Route
+      <Route
+        path="seller-dashboard"
+        element={<SellerDashboard />}
+      />
+
+      //bUyer Dashboard Route
+      <Route
+        path="buyer-dashboard"
+        element={<BuyerDashboard />}
+      />
+
+    </Routes>
     </>
   );
 };

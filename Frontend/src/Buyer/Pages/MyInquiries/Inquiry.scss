@@ -1,0 +1,89 @@
+.buyer-inquiry-parent {
+
+    .top{
+
+        display:flex;
+
+        justify-content:space-between;
+
+        align-items:center;
+
+        margin-bottom:25px;
+
+        h2{
+
+            font-size:28px;
+
+            font-weight:700;
+
+            margin-bottom:5px;
+
+        }
+
+        p{
+
+            color:#777;
+
+        }
+
+    }
+
+}
+
+.property-info{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    .details{
+
+        h4{
+
+            font-size:15px;
+
+            margin:0 0 5px;
+
+            font-weight:600;
+
+        }
+
+        p{
+
+            margin:0;
+
+            color:#666;
+
+            font-size:13px;
+
+        }
+
+    }
+
+}
+
+.ant-table{
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+}
+
+.ant-table-thead > tr > th{
+
+    background:var(--accent)!important;
+
+    color:#fff!important;
+
+    font-weight:600;
+
+}
+
+.ant-table-tbody > tr:hover > td{
+
+    background:#f7f9fb!important;
+
+}

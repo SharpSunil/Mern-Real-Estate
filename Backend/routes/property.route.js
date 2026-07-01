@@ -5,6 +5,7 @@ import {
     deleteProperty,
     deletePropertyImage,
     getAllProperties,
+    getBuyerDashboard,
     getMyProperties,
     getPropertyCounts,
     getPropertyDetails,
@@ -100,5 +101,13 @@ propertyRouter.patch(
 
 // Get Property Details
 propertyRouter.get("/:id", getPropertyDetails);
+
+//buyer dashboard route
+propertyRouter.get(
+    "/buyer/dashboard",
+    protect,
+    authorize("buyer"),
+    getBuyerDashboard
+);
 
 export default propertyRouter;

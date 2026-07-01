@@ -1,7 +1,10 @@
 import React from "react";
 import "./propertycard.scss";
 import image from "../../assets/realestate.jpg";
-import { FaRegHeart } from "react-icons/fa6";
+import {
+    FaRegHeart,
+    FaHeart,
+} from "react-icons/fa6";
 import { VscWorkspaceTrusted } from "react-icons/vsc";
 import { MdRemoveRedEye } from "react-icons/md";
 import { CiLocationOn } from "react-icons/ci";
@@ -10,7 +13,12 @@ import { FaUsers } from "react-icons/fa";
 import { FaCompressArrowsAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-const PropertyCard = ({ property, view }) => {
+const PropertyCard = ({
+    property,
+    view,
+    isWishlisted = false,
+    onWishlistClick,
+}) => {
     const navigate = useNavigate();
 
     const handleCardClick = () => {
@@ -29,7 +37,7 @@ const PropertyCard = ({ property, view }) => {
 
     const propertyImage =
         property?.images?.length > 0
-            ? property.images[0]
+            ? property.images[0].url
             : image;
 
     const formatPrice = (price) => {
@@ -75,11 +83,26 @@ const PropertyCard = ({ property, view }) => {
                     </div>
 
                     <button
-                        className="like"
-                        onClick={handleFavourite}
-                        type="button"
+                        className={`like ${isWishlisted ? "active" : ""}`}
+                        onClick={(e) => {
+
+                            e.stopPropagation();
+
+                            if (onWishlistClick) {
+
+                                onWishlistClick(property._id);
+
+                            }
+
+                        }}
                     >
-                        <FaRegHeart />
+
+                        {
+                            isWishlisted
+                                ? <FaHeart />
+                                : <FaRegHeart />
+                        }
+
                     </button>
 
                     <div className="price">
