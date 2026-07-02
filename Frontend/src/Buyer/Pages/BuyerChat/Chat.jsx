@@ -3,7 +3,7 @@ import React, {
     useRef,
     useState,
 } from "react";
-
+import { Image } from "antd";
 import axios from "axios";
 import "./BuyerChat.scss";
 
@@ -22,11 +22,11 @@ const Chat = ({ selectedChatId }) => {
         localStorage.getItem("user")
     );
 
-const [chat, setChat] = useState(null);
+    const [chat, setChat] = useState(null);
 
-const [currentChatId, setCurrentChatId] = useState(
-    selectedChatId || null
-);
+    const [currentChatId, setCurrentChatId] = useState(
+        selectedChatId || null
+    );
 
     const [message, setMessage] = useState("");
 
@@ -106,17 +106,17 @@ const [currentChatId, setCurrentChatId] = useState(
 
     }, [selectedChatId]);
 
- useEffect(() => {
+    useEffect(() => {
 
-    if (!chat) return;
+        if (!chat) return;
 
-    messagesEndRef.current?.scrollIntoView({
+        messagesEndRef.current?.scrollIntoView({
 
-        behavior: "smooth",
+            behavior: "smooth",
 
-    });
+        });
 
-}, [chat?.messages?.length]);
+    }, [chat?.messages?.length]);
     // =============================
     // Select Image
     // =============================
@@ -366,14 +366,10 @@ const [currentChatId, setCurrentChatId] = useState(
 
                                                                 msg.image && (
 
-                                                                    <img
-
+                                                                    <Image
                                                                         src={msg.image.url}
-
-                                                                        alt=""
-
                                                                         className="chat-image"
-
+                                                                        preview={true}
                                                                     />
 
                                                                 )
